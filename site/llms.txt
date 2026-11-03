@@ -1,0 +1,39 @@
+# Zyntra Launcher
+
+> Zyntra Launcher — бесплатный лаунчер Minecraft с открытым кодом (MIT) на Rust для Windows 10/11 и macOS на Apple Silicon (M1–M4). Все версии Minecraft, игра с офлайн-профилем без аккаунта Microsoft, моды и шейдеры из каталога Modrinth, скины с 3D-просмотром и Horizon — Minecraft 26.3, переписанный на Rust, с OptiFine-настройками. Без рекламы.
+
+Zyntra Launcher is a free, open-source (MIT) Minecraft launcher written in Rust for Windows and Apple Silicon Macs: every Minecraft version, offline profile, one-click Modrinth mods and shaders, 3D skins and Horizon (Minecraft 26.3 rewritten in Rust). No ads.
+
+Ключевые факты:
+- Последняя версия: 0.1.1 (2026-11-03)
+- Цена: бесплатно, без рекламы и платных функций
+- Системы: Windows 10 и 11 (x64); macOS 11+ на Apple Silicon (M1, M2, M3, M4)
+- Размер установщика: около 6 МБ
+- Вход: офлайн-профиль с любым ником, аккаунт Microsoft не нужен
+- Версии: релизы, снапшоты, Beta, Alpha, Fabric; версии Forge, NeoForge и OptiFine из папки TLauncher
+- Моды и шейдеры: каталог Modrinth, зависимости ставятся автоматически
+- Память: подбирается автоматически — половина ОЗУ, от 2 до 8 ГБ
+- Исходный код: https://github.com/ghoperfifj-art/Zyntra-launcher- (лицензия MIT)
+- Неофициальный проект, не связан с Mojang Studios и Microsoft
+
+## Скачать
+- [Установщик для Windows](https://github.com/ghoperfifj-art/Zyntra-launcher-/releases/latest/download/ZyntraSetup-Windows.exe): ZyntraSetup-Windows.exe, последняя версия
+- [Приложение для Mac](https://github.com/ghoperfifj-art/Zyntra-launcher-/releases/latest/download/ZyntraLauncher-macOS.dmg): ZyntraLauncher-macOS.dmg, Apple Silicon
+- [Все версии](https://github.com/ghoperfifj-art/Zyntra-launcher-/releases): история релизов на GitHub
+
+## Страницы
+- [Главная](https://ghoperfifj-art.github.io/Zyntra-launcher-/): что умеет лаунчер, скачивание, частые вопросы
+- [English](https://ghoperfifj-art.github.io/Zyntra-launcher-/en/): the home page in English
+- [Память для Minecraft](https://ghoperfifj-art.github.io/Zyntra-launcher-/guides/pamyat/): Сколько ОЗУ выделять Minecraft без модов и со сборками, как Zyntra Launcher подбирает память автоматически и что делать, если игре не хватает памяти.
+- [Как поставить скин](https://ghoperfifj-art.github.io/Zyntra-launcher-/guides/skin/): Как поставить свой скин в Minecraft с офлайн-профилем через Zyntra Launcher: выбор PNG, 3D-просмотр, тонкие руки, скин в любой версии и в Horizon.
+- [Windows защитила компьютер](https://ghoperfifj-art.github.io/Zyntra-launcher-/guides/windows-zashchitila/): Почему при запуске установщика Zyntra Launcher появляется окно SmartScreen «Система Windows защитила ваш компьютер» и как запустить установку.
+- [Гайды](https://ghoperfifj-art.github.io/Zyntra-launcher-/guides/): Ответы на частые вопросы о Zyntra Launcher: предупреждение «Windows защитила ваш компьютер», сколько памяти выделять Minecraft, как поставить скин, моды и шейдеры, Mac.
+- [Horizon 26.3](https://ghoperfifj-art.github.io/Zyntra-launcher-/horizon/): Что такое Horizon: Minecraft Java Edition 26.3, переписанный на Rust. Как играть в Horizon через Zyntra Launcher и что даёт версия Horizon OptiFine: настройки графики, зум, шейдеры, моды.
+- [Minecraft на Mac](https://ghoperfifj-art.github.io/Zyntra-launcher-/mac/): Как установить Zyntra Launcher на Mac с Apple Silicon, запустить Minecraft без аккаунта Microsoft, что делать с предупреждением macOS и какие версии идут через Rosetta.
+- [Моды](https://ghoperfifj-art.github.io/Zyntra-launcher-/mods/): Установка модов Minecraft через Zyntra Launcher: поиск по каталогу Modrinth, Fabric, Forge и NeoForge, автоматические зависимости, своя папка модов для каждой версии.
+- [Шейдеры](https://ghoperfifj-art.github.io/Zyntra-launcher-/shaders/): Установка шейдеров Minecraft через Zyntra Launcher: каталог Modrinth, шейдеры для Horizon OptiFine без отдельного мода и для Java-версий через Iris или OptiFine.
+- [Альтернатива TLauncher](https://ghoperfifj-art.github.io/Zyntra-launcher-/tlauncher-alternative/): Сравнение Zyntra Launcher, TLauncher, официального лаунчера Minecraft и Prism Launcher: реклама, вход без аккаунта Microsoft, моды, Mac M1, исходный код.
+
+## Optional
+- [Что нового](https://ghoperfifj-art.github.io/Zyntra-launcher-/changelog/): история версий
+- [Полный текст сайта](https://ghoperfifj-art.github.io/Zyntra-launcher-/llms-full.txt)

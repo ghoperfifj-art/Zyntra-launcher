@@ -63,7 +63,11 @@ cargo build --release
 - Установщик Windows: `installer/build.ps1` (нужен [Inno Setup 6](https://jrsoftware.org/isinfo.php)).
 - Приложение и `.dmg` для Mac: `bash macos/build-app.sh` (на Mac).
 - Релиз: тег `v*` (например `git tag v0.1.0 && git push --tags`) — GitHub Actions соберёт обе версии и выложит их в Releases.
-- Сайт: `site/` (главная — `site/index.html`, английская — `site/en/index.html`). Статьи и гайды пишутся в `site-src/pages/`, после правки запустите `python tools/build_site.py` — он соберёт страницы и `sitemap.xml`. Всё в `site/` публикуется на GitHub Pages автоматически.
+- Сайт: `site/` (главная — `site/index.html`, английская — `site/en/index.html`). Статьи и гайды пишутся в `site-src/pages/`, после правки запустите `python tools/build_site.py` — он соберёт страницы, `sitemap.xml` и `llms.txt`. Всё в `site/` публикуется на GitHub Pages автоматически. При релизе (тег `v*`) GitHub сам обновит на сайте версию и дату и добавит версию в «Что нового» из сообщений коммитов (кроме начинающихся с «Сайт», «Репозиторий», «README», «Версия»).
+
+## Лицензия
+
+Код лаунчера распространяется по лицензии [MIT](LICENSE): его можно свободно использовать, изменять и распространять с сохранением уведомления об авторских правах.
 
 ---
 

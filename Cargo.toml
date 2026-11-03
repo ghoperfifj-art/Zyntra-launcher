@@ -3,6 +3,8 @@ name = "zyntra"
 version = "0.1.1"
 edition = "2021"
 description = "Zyntra Launcher — лёгкий лаунчер Minecraft без рекламы, с поддержкой Horizon"
+license = "MIT"
+repository = "https://github.com/ghoperfifj-art/Zyntra-launcher-"
 
 [dependencies]
 eframe = { version = "0.31.1", default-features = false, features = ["default_fonts", "glow"] }

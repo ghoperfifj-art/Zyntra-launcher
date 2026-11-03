@@ -5,6 +5,9 @@
 # The files keep the same names in every release, so these links always give the latest:
 #   https://github.com/ghoperfifj-art/Zyntra-launcher-/releases/latest/download/ZyntraSetup-Windows.exe
 #   https://github.com/ghoperfifj-art/Zyntra-launcher-/releases/latest/download/ZyntraLauncher-macOS.dmg
+#
+# After a tagged release the website is dated for it (tools/build_site.py --release: the
+# version and date on the home pages, «Что нового», sitemap, llms.txt) and republished.
 name: Release
 
 on:
@@ -14,6 +17,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
   windows:
@@ -72,3 +76,26 @@ jobs:
             gh release create "$TAG" ZyntraSetup-Windows.exe ZyntraLauncher-macOS.dmg -R "$GITHUB_REPOSITORY" \
               --target "$GITHUB_SHA" --title "Zyntra Launcher $TAG" --notes "$notes"
           fi
+
+  site:
+    needs: release
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Date the website for this release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 tools/build_site.py --release
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site site-src
+          if git diff --cached --quiet; then echo "Сайт уже актуален"; exit 0; fi
+          git commit -m "Сайт: версия ${GITHUB_REF_NAME#v}"
+          git push origin main
+          # A push made with the workflow token starts no workflows, so publish explicitly.
+          gh workflow run pages.yml --ref main -R "$GITHUB_REPOSITORY"
