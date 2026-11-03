@@ -1,0 +1,17 @@
+# Zyntra Launcher — открыт для всех поисковиков и ИИ-поиска.
+User-agent: *
+Allow: /
+
+# ИИ-боты (ChatGPT, Claude, Perplexity, Gemini, Алиса) — разрешены явно.
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: PerplexityBot
+User-agent: Google-Extended
+User-agent: YandexAdditional
+User-agent: YandexAdditionalBot
+Allow: /
+
+Sitemap: https://ghoperfifj-art.github.io/Zyntra-launcher-/sitemap.xml
