@@ -35,7 +35,7 @@ body {
   overflow-x: hidden;
 }
 a { color: inherit; text-decoration: none; }
-img { max-width: 100%; display: block; }
+img { max-width: 100%; height: auto; display: block; }
 .wrap { width: min(1160px, 100% - 32px); margin-inline: auto; }
 
 /* Background: soft purple light and a faint pixel grid */
@@ -99,10 +99,15 @@ header {
 .note { color: var(--muted); font-size: 13px; margin-top: 16px; }
 .note a { color: var(--accent); }
 
-.float-block { position: absolute; width: 84px; opacity: .9; filter: drop-shadow(0 18px 30px rgba(0,0,0,.5)); animation: bob 6s ease-in-out infinite; }
-.float-block.a { left: 2%; top: 120px; }
-.float-block.b { right: 3%; top: 300px; width: 60px; animation-delay: -3s; }
-@keyframes bob { 50% { transform: translateY(-14px) rotate(4deg); } }
+/* Blocks far behind the hero, out of focus like a background: the further, the smaller,
+   dimmer and blurrier. They drift slowly and never cover the text. */
+.hero { isolation: isolate; }
+.bg-blocks { position: absolute; inset: 0 -8%; z-index: -1; pointer-events: none; overflow: hidden; }
+.bg-blocks img {
+  position: absolute; width: var(--s); opacity: var(--o); filter: blur(var(--b)) saturate(.8);
+  animation: drift 14s ease-in-out infinite; animation-delay: var(--d, 0s);
+}
+@keyframes drift { 50% { transform: translateY(-18px) rotate(6deg); } }
 
 .shot {
   margin: 56px auto 0; border-radius: var(--radius); overflow: hidden;
@@ -148,7 +153,8 @@ section { padding: 90px 0 0; }
 .horizon img { border-radius: 16px; border: 1px solid var(--line); position: relative; z-index: 1; }
 
 /* Gallery */
-.gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+/* One screenshot per row, at full width, so the launcher's text stays readable. */
+.gallery { display: grid; grid-template-columns: 1fr; gap: 28px; }
 .gallery figure { border-radius: 18px; overflow: hidden; border: 1px solid var(--line); background: var(--card); }
 .gallery figcaption { padding: 12px 16px; color: var(--muted); font-size: 14px; }
 
@@ -179,7 +185,7 @@ footer { margin-top: 100px; border-top: 1px solid var(--line); padding: 34px 0 4
 @media (max-width: 900px) {
   .grid { grid-template-columns: 1fr 1fr; }
   .horizon { grid-template-columns: 1fr; padding: 28px; }
-  .float-block { display: none; }
+  .bg-blocks img:nth-child(n+5) { display: none; }
 }
 @media (max-width: 640px) {
   .links { display: none; }
@@ -210,8 +216,14 @@ footer { margin-top: 100px; border-top: 1px solid var(--line); padding: 34px 0 4
 
 <main>
   <div class="wrap hero">
-    <img class="float-block a" src="img/block.png" alt="">
-    <img class="float-block b" src="img/block.png" alt="">
+    <div class="bg-blocks" aria-hidden="true">
+      <img src="img/block.png" alt="" style="--s:150px;--o:.16;--b:6px;left:4%;top:40px">
+      <img src="img/block.png" alt="" style="--s:70px;--o:.22;--b:2px;left:16%;top:330px;--d:-5s">
+      <img src="img/block.png" alt="" style="--s:110px;--o:.14;--b:4px;right:6%;top:90px;--d:-9s">
+      <img src="img/block.png" alt="" style="--s:54px;--o:.2;--b:1.5px;right:18%;top:400px;--d:-3s">
+      <img src="img/block.png" alt="" style="--s:190px;--o:.1;--b:9px;right:-2%;top:520px;--d:-7s">
+      <img src="img/block.png" alt="" style="--s:120px;--o:.1;--b:7px;left:-1%;top:560px;--d:-11s">
+    </div>
     <span class="badge">Бесплатно · без рекламы · Windows и Mac</span>
     <h1>Лаунчер Minecraft, <span>который просто работает</span></h1>
     <p class="lead">Все версии Minecraft, игра без аккаунта Microsoft, моды, шейдеры и скины в одном лёгком приложении на Rust.</p>
