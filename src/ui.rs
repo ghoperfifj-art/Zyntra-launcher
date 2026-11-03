@@ -129,35 +129,70 @@ pub fn glow(p: &Painter, clip: Rect, center: Pos2, radius: f32, color: Color32) 
     p.add(Shape::mesh(mesh));
 }
 
-/// Paints `under` over the parts of `rect` outside its rounded corners, so glows
-/// clipped to the rectangle keep the rounded shape.
-pub fn mask_corners(p: &Painter, rect: Rect, r: f32, under: Color32) {
-    let corners = [
-        (rect.left_top(), Vec2::new(1.0, 1.0)),
-        (rect.right_top(), Vec2::new(-1.0, 1.0)),
-        (rect.left_bottom(), Vec2::new(1.0, -1.0)),
-        (rect.right_bottom(), Vec2::new(-1.0, -1.0)),
+/// Outline of a rounded rectangle, clockwise from the top-left arc.
+fn rounded_outline(rect: Rect, r: f32) -> Vec<Pos2> {
+    use std::f32::consts::{FRAC_PI_2, PI};
+    let r = r.min(rect.width() * 0.5).min(rect.height() * 0.5);
+    // (arc centre, angle the arc starts at)
+    let arcs = [
+        (rect.left_top() + Vec2::new(r, r), PI),
+        (rect.right_top() + Vec2::new(-r, r), PI * 1.5),
+        (rect.right_bottom() + Vec2::new(-r, -r), 0.0),
+        (rect.left_bottom() + Vec2::new(r, -r), FRAC_PI_2),
     ];
-    let steps = 32u32;
-    for (corner, d) in corners {
-        let center = corner + Vec2::new(d.x * r, d.y * r);
-        let mut mesh = Mesh::default();
-        mesh.colored_vertex(corner, under);
+    let steps = 16;
+    let mut arc_points = Vec::with_capacity(arcs.len() * (steps + 1));
+    for (c, start) in arcs {
         for i in 0..=steps {
-            let t = i as f32 / steps as f32 * std::f32::consts::FRAC_PI_2;
-            mesh.colored_vertex(center + Vec2::new(-d.x * r * t.cos(), -d.y * r * t.sin()), under);
+            arc_points.push(c + Vec2::angled(start + FRAC_PI_2 * i as f32 / steps as f32) * r);
         }
-        for i in 1..=steps {
-            mesh.add_triangle(0, i, i + 1);
-        }
-        p.add(Shape::mesh(mesh));
     }
+    // Points every few pixels along the straight sides too: long thin triangles would show
+    // as stripes in the glow.
+    const STEP: f32 = 8.0;
+    let mut out = Vec::new();
+    for (i, &a) in arc_points.iter().enumerate() {
+        let b = arc_points[(i + 1) % arc_points.len()];
+        let n = (a.distance(b) / STEP).ceil().max(1.0) as u32;
+        for k in 0..n {
+            out.push(a + (b - a) * (k as f32 / n as f32));
+        }
+    }
+    out
 }
 
-/// Glow inside a rounded card that sits on `under`; re-strokes the card border.
-pub fn card_glow(p: &Painter, rect: Rect, rounding: f32, under: Color32, center: Pos2, radius: f32, color: Color32, border: Color32) {
-    glow(p, rect, center, radius, color);
-    mask_corners(p, rect, rounding, under);
+/// Glow inside a rounded card, drawn only within its rounded shape (nothing is painted
+/// over the corners, so they look the same whatever lies under the card); re-strokes the
+/// card border.
+pub fn card_glow(p: &Painter, rect: Rect, rounding: f32, center: Pos2, radius: f32, color: Color32, border: Color32) {
+    // Same falloff as `glow`: full at the centre, gone at `radius`.
+    let falloff = |d: f32| -> f32 {
+        let x = d / radius;
+        let stops = [(0.0, 1.0), (0.3, 0.7), (0.6, 0.3), (1.0, 0.0)];
+        stops.windows(2).find(|w| x <= w[1].0).map_or(0.0, |w| w[0].1 + (w[1].1 - w[0].1) * (x - w[0].0) / (w[1].0 - w[0].0))
+    };
+    // Rays from a point inside the card to its outline; a centre outside the card still
+    // sets the colours.
+    let origin = center.clamp(rect.min + Vec2::splat(1.0), rect.max - Vec2::splat(1.0));
+    let outline = rounded_outline(rect, rounding);
+    let samples = 16u32;
+    let mut mesh = Mesh::default();
+    for &edge in &outline {
+        for k in 0..=samples {
+            let pos = origin + (edge - origin) * (k as f32 / samples as f32);
+            mesh.colored_vertex(pos, color.gamma_multiply(falloff(pos.distance(center))));
+        }
+    }
+    let n = outline.len() as u32;
+    let per = samples + 1;
+    for ray in 0..n {
+        let (a, b) = (ray * per, (ray + 1) % n * per);
+        for k in 0..samples {
+            mesh.add_triangle(a + k, a + k + 1, b + k);
+            mesh.add_triangle(a + k + 1, b + k + 1, b + k);
+        }
+    }
+    p.add(Shape::mesh(mesh));
     p.rect_stroke(rect, rounding, Stroke::new(1.0_f32, border), StrokeKind::Inside);
 }
 

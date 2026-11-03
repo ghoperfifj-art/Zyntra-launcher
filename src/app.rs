@@ -394,8 +394,7 @@ impl App {
     fn sidebar(&mut self, ui: &mut Ui, rect: Rect) {
         let p = ui.painter().clone();
         p.rect(rect, 22, PANEL, Stroke::new(1.0_f32, BORDER), StrokeKind::Inside);
-        // Glow sits well inside the panel so the rounded corners stay clean.
-        card_glow(&p, rect, 22.0, BG, rect.left_top() + vec2(rect.width() * 0.45, 70.0), 220.0, glow_color(26), BORDER);
+        card_glow(&p, rect, 22.0, rect.left_top() + vec2(rect.width() * 0.45, 70.0), 220.0, glow_color(26), BORDER);
 
         // Same artwork as the window / .exe icon.
         let logo = Rect::from_min_size(rect.min + vec2(18.0, 22.0), vec2(44.0, 44.0));
@@ -579,7 +578,7 @@ impl App {
             let selected = self.cfg.target.as_ref() == Some(&target);
             p.rect(r, 16, if resp.hovered() || selected { CARD_HI } else { SUNKEN }, Stroke::new(1.0_f32, if selected { ACCENT_DIM } else { BORDER }), StrokeKind::Inside);
             if selected {
-                card_glow(&p, r, 16.0, CARD, r.right_top(), r.width() * 0.8, glow_color(40), ACCENT_DIM);
+                card_glow(&p, r, 16.0, r.right_top(), r.width() * 0.8, glow_color(40), ACCENT_DIM);
             }
             text_fit(&p, r.left_top() + vec2(14.0, 14.0), Align2::LEFT_TOP, &id, bold(15.0), TEXT, r.width() - 24.0);
             text(&p, r.left_top() + vec2(14.0, 38.0), Align2::LEFT_TOP, source, font(12.0), GREEN);
@@ -616,7 +615,7 @@ impl App {
     fn selected_card(&mut self, ui: &mut Ui, rect: Rect) {
         let p = ui.painter().clone();
         card(&p, rect);
-        card_glow(&p, rect, 20.0, BG, rect.right_bottom(), rect.width() * 0.7, glow_color(35), BORDER);
+        card_glow(&p, rect, 20.0, rect.right_bottom(), rect.width() * 0.7, glow_color(35), BORDER);
         text(&p, rect.left_top() + vec2(20.0, 18.0), Align2::LEFT_TOP, "Версия", bold(16.0), TEXT);
         let btn = Rect::from_min_size(rect.right_top() + vec2(-122.0, 14.0), vec2(106.0, 34.0));
         let mut c = child_ui(ui, btn, "change_btn", Layout::right_to_left(Align::Center));
@@ -638,7 +637,7 @@ impl App {
     fn profile_card(&mut self, ui: &mut Ui, rect: Rect) {
         let p = ui.painter().clone();
         card(&p, rect);
-        card_glow(&p, rect, 20.0, BG, rect.center_bottom() + vec2(0.0, 30.0), rect.width() * 0.75, glow_color(100), BORDER);
+        card_glow(&p, rect, 20.0, rect.center_bottom() + vec2(0.0, 30.0), rect.width() * 0.75, glow_color(100), BORDER);
         text(&p, rect.left_top() + vec2(20.0, 18.0), Align2::LEFT_TOP, "Профиль", bold(16.0), TEXT);
         let left = rect.left() + 20.0;
         let right = rect.right() - 20.0;
@@ -821,7 +820,7 @@ impl App {
 
         // 3D model
         card(&p, stage);
-        card_glow(&p, stage, 20.0, BG, stage.center_bottom(), stage.width() * 0.6, glow_color(60), BORDER);
+        card_glow(&p, stage, 20.0, stage.center_bottom(), stage.width() * 0.6, glow_color(60), BORDER);
         pixel_dust(&p, stage.right_top() + vec2(-60.0, 70.0), vec2(1.0, 1.0), 10.0, glow_color(120));
         pixel_dust(&p, stage.left_bottom() + vec2(30.0, -60.0), vec2(1.0, 1.0), 8.0, glow_color(90));
         text(&p, stage.left_top() + vec2(22.0, 20.0), Align2::LEFT_TOP, "Персонаж", bold(20.0), TEXT);
@@ -1966,7 +1965,7 @@ impl App {
         // Summary
         let side = Rect::from_min_max(Pos2::new(settings.right() + GAP, body.top()), body.max);
         card(&p, side);
-        card_glow(&p, side, 20.0, BG, side.center_bottom(), side.width() * 0.8, glow_color(70), BORDER);
+        card_glow(&p, side, 20.0, side.center_bottom(), side.width() * 0.8, glow_color(70), BORDER);
         let f = &self.cfg.fine;
         let on = |v: bool| if v { "вкл" } else { "выкл" };
         let shader = if f.shader_pack.is_empty() { "выкл".to_owned() } else { f.shader_pack.clone() };
@@ -2124,7 +2123,7 @@ impl App {
     fn settings(&mut self, ui: &mut Ui, body: Rect) {
         let p = ui.painter().clone();
         card(&p, body);
-        card_glow(&p, body, 20.0, BG, body.right_top(), 320.0, glow_color(30), BORDER);
+        card_glow(&p, body, 20.0, body.right_top(), 320.0, glow_color(30), BORDER);
         text(&p, body.left_top() + vec2(26.0, 22.0), Align2::LEFT_TOP, "Настройки", bold(22.0), TEXT);
         let inner = Rect::from_min_max(body.min + vec2(26.0, 72.0), body.max - vec2(26.0, 20.0));
         let mut c = child_ui(ui, inner, "settings", Layout::top_down(Align::Min));
