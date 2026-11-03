@@ -1,0 +1,1 @@
+{ "parent": "minecraft:item/generated", "textures": { "layer0": "zyntra_crystals:item/crystal_shard" } }

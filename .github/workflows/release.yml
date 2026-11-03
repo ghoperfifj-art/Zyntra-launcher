@@ -1,0 +1,74 @@
+# Builds the Windows installer and the macOS (Apple Silicon) disk image and publishes both
+# as a GitHub release. Runs on a "v*" tag (git tag v0.1.0 && git push --tags) or by hand
+# from the Actions tab.
+#
+# The files keep the same names in every release, so these links always give the latest:
+#   https://github.com/ghoperfifj-art/Zyntra-launcher-/releases/latest/download/ZyntraSetup-Windows.exe
+#   https://github.com/ghoperfifj-art/Zyntra-launcher-/releases/latest/download/ZyntraLauncher-macOS.dmg
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Inno Setup
+        shell: pwsh
+        run: if (-not (Test-Path "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe")) { choco install innosetup -y --no-progress }
+      - name: Build installer
+        shell: pwsh
+        run: |
+          ./installer/build.ps1
+          Copy-Item (Get-ChildItem dist/ZyntraSetup-*.exe | Select-Object -First 1) dist/ZyntraSetup-Windows.exe
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: dist/ZyntraSetup-Windows.exe
+
+  macos:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin
+      - uses: Swatinem/rust-cache@v2
+      - name: Build app and disk image
+        run: |
+          bash macos/build-app.sh
+          cp dist/ZyntraLauncher-*-macos-arm64.dmg dist/ZyntraLauncher-macOS.dmg
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos
+          path: dist/ZyntraLauncher-macOS.dmg
+
+  release:
+    needs: [windows, macos]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_type == 'tag' && github.ref_name || 'nightly' }}
+        run: |
+          notes="Windows: скачай ZyntraSetup-Windows.exe и запусти.
+          Mac (M1/M2/M3/M4): скачай ZyntraLauncher-macOS.dmg, открой и перетащи Zyntra Launcher в «Программы»."
+          if gh release view "$TAG" -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$TAG" ZyntraSetup-Windows.exe ZyntraLauncher-macOS.dmg --clobber -R "$GITHUB_REPOSITORY"
+          else
+            gh release create "$TAG" ZyntraSetup-Windows.exe ZyntraLauncher-macOS.dmg -R "$GITHUB_REPOSITORY" \
+              --target "$GITHUB_SHA" --title "Zyntra Launcher $TAG" --notes "$notes"
+          fi

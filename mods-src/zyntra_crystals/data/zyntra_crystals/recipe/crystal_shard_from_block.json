@@ -1,0 +1,1 @@
+{ "type": "minecraft:crafting_shapeless", "category": "misc", "ingredients": ["zyntra_crystals:crystal_block"], "result": { "id": "zyntra_crystals:crystal_shard", "count": 4 } }

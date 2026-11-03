@@ -1,0 +1,12 @@
+# Build output
+/target/
+/dist/
+
+# Game files the launcher downloads (versions, Horizon, worlds) — never in the repo
+/minecraft/
+
+# Settings the launcher writes next to itself
+zyntra.json
+zlauncher.json
+
+.DS_Store

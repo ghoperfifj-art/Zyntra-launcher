@@ -1,0 +1,9 @@
+id = "zyntra_crystals"
+name = "Zyntra Crystals"
+version = "0.1.0"
+description = "Glowing purple crystals: a light-giving block, shards and a crystal sword."
+authors = ["Zyntra Launcher"]
+# A content mod: blocks and items from data/ and assets/, no code (API 0.2).
+api = "0.2"
+side = "both"
+capabilities = ["registries"]

@@ -1,0 +1,1 @@
+{ "type": "minecraft:block", "pools": [ { "condition": { "type": "minecraft:survives_explosion" }, "entries": [ { "type": "minecraft:item", "name": "zyntra_crystals:crystal_block" } ], "rolls": 1 } ], "random_sequence": "zyntra_crystals:blocks/crystal_block" }
