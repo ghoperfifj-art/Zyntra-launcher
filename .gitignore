@@ -13,3 +13,6 @@ zlauncher.json
 
 # Local tool settings
 /.claude/
+
+# Other people's mods dropped into the folder
+*.jar
