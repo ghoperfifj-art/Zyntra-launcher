@@ -161,6 +161,7 @@ section { padding: 90px 0 0; }
 /* Download */
 .dl { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 .dl .card { display: flex; flex-direction: column; gap: 14px; }
+.dl .card { cursor: pointer; transition: border-color .2s, box-shadow .2s; }
 .dl .card.current { border-color: var(--accent2); box-shadow: 0 0 0 1px var(--accent2), 0 20px 60px rgba(157,78,221,.2); }
 .dl h3 { display: flex; align-items: center; gap: 10px; font-size: 22px; }
 .dl h3 svg { width: 26px; height: 26px; }
@@ -406,7 +407,23 @@ footer { margin-top: 100px; border-top: 1px solid var(--line); padding: 34px 0 4
   var cards = document.querySelector('.dl');
   cards.insertBefore(cards.querySelector('[data-card="mac"]'), cards.firstChild);
 })();
-document.querySelector('.dl [data-card="' + (/Mac/.test(navigator.platform || navigator.userAgent) ? 'mac' : 'win') + '"]').classList.add('current');
+// The highlighted download card: the visitor's own system at first, then whichever card is
+// pointed at; a click (or tap) makes it the chosen one the highlight returns to.
+(function () {
+  var grid = document.querySelector('.dl');
+  var cards = grid.querySelectorAll('[data-card]');
+  var chosen = /Mac/.test(navigator.platform || navigator.userAgent) ? 'mac' : 'win';
+  function mark(os) {
+    cards.forEach(function (c) { c.classList.toggle('current', c.dataset.card === os); });
+  }
+  cards.forEach(function (c) {
+    c.addEventListener('mouseenter', function () { mark(c.dataset.card); });
+    c.addEventListener('focusin', function () { mark(c.dataset.card); });
+    c.addEventListener('click', function () { chosen = c.dataset.card; mark(chosen); });
+  });
+  grid.addEventListener('mouseleave', function () { mark(chosen); });
+  mark(chosen);
+})();
 </script>
 </body>
 </html>
