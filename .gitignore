@@ -10,3 +10,6 @@ zyntra.json
 zlauncher.json
 
 .DS_Store
+
+# Local tool settings
+/.claude/

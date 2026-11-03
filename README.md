@@ -5,7 +5,7 @@
 <h1 align="center">Zyntra Launcher</h1>
 
 <p align="center">
-  Лёгкий лаунчер Minecraft без рекламы, написанный на Rust.<br>
+  Лёгкий лаунчер Minecraft без рекламы, написанный на Rust. Сайт: <a href="https://ghoperfifj-art.github.io/Zyntra-launcher-/">ghoperfifj-art.github.io/Zyntra-launcher-</a><br>
   Все версии Minecraft, игра без аккаунта Microsoft, моды, шейдеры, скины — и Horizon, Minecraft 26.3, переписанный на Rust.
 </p>
 
