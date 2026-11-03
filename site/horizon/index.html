@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Horizon 26.3 — Minecraft на Rust для слабых ПК | Zyntra Launcher</title>
+<meta name="description" content="Что такое Horizon: Minecraft Java Edition 26.3, переписанный на Rust. Как играть в Horizon через Zyntra Launcher и что даёт версия Horizon OptiFine: настройки графики, зум, шейдеры, моды.">
+<link rel="canonical" href="https://ghoperfifj-art.github.io/Zyntra-launcher-/horizon/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Zyntra Launcher">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:url" content="https://ghoperfifj-art.github.io/Zyntra-launcher-/horizon/">
+<meta property="og:title" content="Horizon 26.3 — Minecraft на Rust для слабых ПК | Zyntra Launcher">
+<meta property="og:description" content="Что такое Horizon: Minecraft Java Edition 26.3, переписанный на Rust. Как играть в Horizon через Zyntra Launcher и что даёт версия Horizon OptiFine: настройки графики, зум, шейдеры, моды.">
+<meta property="og:image" content="https://ghoperfifj-art.github.io/Zyntra-launcher-/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="article:modified_time" content="2026-11-03">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ghoperfifj-art.github.io/Zyntra-launcher-/img/og.png">
+<meta name="theme-color" content="#0d0a14">
+<link rel="icon" type="image/png" href="../img/favicon.png">
+<link rel="preload" href="../fonts/inter-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../fonts/unbounded-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../style.css">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "Article",
+ "headline": "Horizon 26.3 — Minecraft, переписанный на Rust",
+ "description": "Что такое Horizon: Minecraft Java Edition 26.3, переписанный на Rust. Как играть в Horizon через Zyntra Launcher и что даёт версия Horizon OptiFine: настройки графики, зум, шейдеры, моды.",
+ "url": "https://ghoperfifj-art.github.io/Zyntra-launcher-/horizon/",
+ "inLanguage": "ru",
+ "dateModified": "2026-11-03",
+ "datePublished": "2026-11-03",
+ "image": "https://ghoperfifj-art.github.io/Zyntra-launcher-/img/og.png",
+ "author": {
+  "@type": "Organization",
+  "name": "Zyntra",
+  "url": "https://ghoperfifj-art.github.io/Zyntra-launcher-/"
+ },
+ "publisher": {
+  "@type": "Organization",
+  "name": "Zyntra",
+  "url": "https://ghoperfifj-art.github.io/Zyntra-launcher-/",
+  "logo": {
+   "@type": "ImageObject",
+   "url": "https://ghoperfifj-art.github.io/Zyntra-launcher-/img/logo.png"
+  }
+ },
+ "mainEntityOfPage": "https://ghoperfifj-art.github.io/Zyntra-launcher-/horizon/"
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "BreadcrumbList",
+ "itemListElement": [
+  {
+   "@type": "ListItem",
+   "position": 1,
+   "name": "Zyntra Launcher",
+   "item": "https://ghoperfifj-art.github.io/Zyntra-launcher-/"
+  },
+  {
+   "@type": "ListItem",
+   "position": 2,
+   "name": "Horizon 26.3",
+   "item": "https://ghoperfifj-art.github.io/Zyntra-launcher-/horizon/"
+  }
+ ]
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "FAQPage",
+ "mainEntity": [
+  {
+   "@type": "Question",
+   "name": "Нужна ли лицензия Minecraft для Horizon?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Horizon готовит текстуры и звуки из официальных файлов Minecraft 26.3, которые Zyntra скачивает с серверов Mojang. Играть можно с офлайн-профилем, как и в обычных версиях."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Работают ли моды Forge и Fabric в Horizon?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Нет: Horizon написан на Rust, Java-моды в нём не запускаются. У Horizon свои моды — контентные (блоки и предметы) и нативные (код на Rust). Они есть в лаунчере в разделе «Моды» → «Horizon»."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Можно ли играть в Horizon с друзьями?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Да: откройте мир для сети (LAN) или зайдите на сервер версии 26.3. Друзья могут играть и в обычном Minecraft 26.3."
+   }
+  }
+ ]
+}
+</script>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="../">
+      <img src="../img/logo.png" width="38" height="38" alt="Zyntra Launcher">
+      <span><b>ZYNTRA</b><small>LAUNCHER</small></span>
+    </a>
+    <nav class="links">
+      <a href="../guides/">Гайды</a>
+      <a href="../tlauncher-alternative/">Сравнение</a>
+      <a href="../mac/">Mac</a>
+      <a href="../horizon/">Horizon</a>
+    </nav>
+    <a class="btn small primary" href="../#download">Скачать</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <nav class="crumbs" aria-label="Навигация"><a href="../">Главная</a><span>›</span>Horizon 26.3</nav>
+  <div class="page-head">
+    <h1>Horizon 26.3 — Minecraft, переписанный на Rust</h1>
+    <p class="lead">Horizon — неофициальный проект, который переписал Minecraft Java Edition 26.3 на Rust. Он быстрее запускается и легче работает на слабом железе. Zyntra Launcher ставит Horizon в один клик и добавляет версию Horizon OptiFine — с настройками графики, зумом, шейдерами и модами.</p>
+    <time class="updated" datetime="2026-11-03">Обновлено 3 ноября 2026</time>
+  </div>
+  <article class="article">
+<h2>Что такое Horizon?</h2>
+<div class="answer">
+  <p>Horizon (<a href="https://github.com/horizon-rust/horizon">horizon-rust/horizon</a>) — это Minecraft Java Edition версии 26.3, заново написанный на языке Rust. Java для игры не нужна: Horizon — обычная программа для Windows, macOS и Linux. Миры, серверы и ресурс-паки — те же, что в Minecraft 26.3.</p>
+</div>
+<p>Horizon не содержит текстур и звуков Minecraft. При первом запуске их готовят из официальных файлов игры 26.3 — Zyntra Launcher делает это сам: скачивает нужные файлы Mojang и запускает подготовку.</p>
+
+<h2>Чем Horizon лучше обычного Minecraft на слабом ПК?</h2>
+<ul>
+  <li><strong>Нет Java-машины.</strong> Игра не тратит время и память на запуск Java — старт и вход в мир быстрее.</li>
+  <li><strong>Память расходуется бережнее.</strong> Нет «сборщика мусора» Java, из-за которого обычный Minecraft подтормаживает.</li>
+  <li><strong>Те же миры и серверы.</strong> Horizon совместим с Minecraft 26.3: можно играть по сети, открывать мир для LAN, заходить на серверы 26.3.</li>
+</ul>
+
+<h2>Horizon 26.3 и Horizon OptiFine — в чём разница?</h2>
+<div class="table-wrap">
+<table>
+  <thead><tr><th></th><th>Horizon 26.3</th><th>Horizon OptiFine</th></tr></thead>
+  <tbody>
+    <tr><td>Игра</td><td>Horizon как есть</td><td>Тот же Horizon, те же миры</td></tr>
+    <tr><td>Настройки графики</td><td>Обычные</td><td>Zyntra Fine: пресеты «Слабый ПК», «Баланс», «Качество», подгрузка чанков, лимит FPS, отсечение невидимого</td></tr>
+    <tr><td>Зум</td><td class="no">Нет</td><td class="yes">По клавише (C по умолчанию)</td></tr>
+    <tr><td>Динамический свет</td><td class="no">Нет</td><td class="yes">Факел в руке освещает всё вокруг</td></tr>
+    <tr><td>Шейдеры</td><td class="no">Нет</td><td class="yes">Паки OptiFine/Iris (.zip), например BSL</td></tr>
+    <tr><td>Нативные моды</td><td class="no">Нет</td><td class="yes">Freecam, мини-карта и другие из каталога Horizon</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Как играть в Horizon через Zyntra Launcher</h2>
+<ol>
+  <li><a href="../#download">Скачайте и установите Zyntra Launcher</a>.</li>
+  <li>На главном экране в списке «Версии» выберите <strong>Horizon 26.3</strong> или <strong>Horizon OptiFine 26.3</strong>.</li>
+  <li>Нажмите «Играть». В первый раз лаунчер скачает Horizon (≈ 40 МБ) и подготовит файлы игры — это занимает несколько минут.</li>
+</ol>
+<p>Настройки Horizon OptiFine — в разделе <strong>Zyntra Fine</strong> в левом меню лаунчера.</p>
+
+<h2>Какие настройки ставить на слабом ПК?</h2>
+<div class="answer">
+  <p>Пресет <strong>«Слабый ПК»</strong> в Zyntra Fine: дальность 8 чанков, симуляция 6, лимит 60 FPS, плавная подгрузка чанков, без облаков и теней. Лаунчер включает его сам, если в компьютере меньше 12 ГБ памяти.</p>
+</div>
+<p>Тяжёлые шейдеры вроде BSL при входе в мир компилируются несколько секунд — на встроенной графике это видно как короткое зависание. Для слабого ПК лучше играть без шейдеров.</p>
+
+<details>
+  <summary>Нужна ли лицензия Minecraft для Horizon?</summary>
+  <p>Horizon готовит текстуры и звуки из официальных файлов Minecraft 26.3, которые Zyntra скачивает с серверов Mojang. Играть можно с офлайн-профилем, как и в обычных версиях.</p>
+</details>
+<details>
+  <summary>Работают ли моды Forge и Fabric в Horizon?</summary>
+  <p>Нет: Horizon написан на Rust, Java-моды в нём не запускаются. У Horizon свои моды — контентные (блоки и предметы) и нативные (код на Rust). Они есть в лаунчере в разделе «Моды» → «Horizon».</p>
+</details>
+<details>
+  <summary>Можно ли играть в Horizon с друзьями?</summary>
+  <p>Да: откройте мир для сети (LAN) или зайдите на сервер версии 26.3. Друзья могут играть и в обычном Minecraft 26.3.</p>
+</details>
+  </article>
+  <section class="related"><h2>Читайте также</h2><div class="cards"><a class="card" href="../shaders/"><h3>Шейдеры</h3><p>Установка шейдеров Minecraft через Zyntra Launcher: каталог Modrinth, шейдеры для Horizon OptiFine без отдельного мода и для Java-версий через Iris или OptiFine.</p></a><a class="card" href="../mods/"><h3>Моды</h3><p>Установка модов Minecraft через Zyntra Launcher: поиск по каталогу Modrinth, Fabric, Forge и NeoForge, автоматические зависимости, своя папка модов для каждой версии.</p></a><a class="card" href="../tlauncher-alternative/"><h3>Альтернатива TLauncher</h3><p>Сравнение Zyntra Launcher, TLauncher, официального лаунчера Minecraft и Prism Launcher: реклама, вход без аккаунта Microsoft, моды, Mac M1, исходный код.</p></a><a class="card" href="../mac/"><h3>Minecraft на Mac</h3><p>Как установить Zyntra Launcher на Mac с Apple Silicon, запустить Minecraft без аккаунта Microsoft, что делать с предупреждением macOS и какие версии идут через Rosetta.</p></a></div></section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div>
+      <b style="color:var(--text)">Zyntra Launcher</b> · <a href="https://github.com/ghoperfifj-art/Zyntra-launcher-">GitHub</a><br>
+      Неофициальный проект, не связан с Mojang Studios и Microsoft.<br>Minecraft — торговая марка Mojang и Microsoft.
+    </div>
+    <nav class="foot-links" aria-label="Разделы сайта">
+        <a href="../tlauncher-alternative/">Альтернатива TLauncher</a>
+        <a href="../mac/">Minecraft на Mac M1–M4</a>
+        <a href="../horizon/">Horizon 26.3</a>
+        <a href="../mods/">Как ставить моды</a>
+        <a href="../shaders/">Как ставить шейдеры</a>
+        <a href="../guides/">Все гайды</a>
+        <a href="../changelog/">Что нового</a>
+        <a href="../en/">English</a>
+    </nav>
+  </div>
+</footer>
+</body>
+</html>

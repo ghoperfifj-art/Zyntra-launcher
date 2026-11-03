@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Minecraft на Mac M1, M2, M3, M4 — установка Zyntra Launcher</title>
+<meta name="description" content="Как установить Zyntra Launcher на Mac с Apple Silicon, запустить Minecraft без аккаунта Microsoft, что делать с предупреждением macOS и какие версии идут через Rosetta.">
+<link rel="canonical" href="https://ghoperfifj-art.github.io/Zyntra-launcher-/mac/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Zyntra Launcher">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:url" content="https://ghoperfifj-art.github.io/Zyntra-launcher-/mac/">
+<meta property="og:title" content="Minecraft на Mac M1, M2, M3, M4 — установка Zyntra Launcher">
+<meta property="og:description" content="Как установить Zyntra Launcher на Mac с Apple Silicon, запустить Minecraft без аккаунта Microsoft, что делать с предупреждением macOS и какие версии идут через Rosetta.">
+<meta property="og:image" content="https://ghoperfifj-art.github.io/Zyntra-launcher-/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="article:modified_time" content="2026-11-03">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ghoperfifj-art.github.io/Zyntra-launcher-/img/og.png">
+<meta name="theme-color" content="#0d0a14">
+<link rel="icon" type="image/png" href="../img/favicon.png">
+<link rel="preload" href="../fonts/inter-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../fonts/unbounded-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../style.css">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "HowTo",
+ "headline": "Minecraft на Mac M1, M2, M3 и M4",
+ "description": "Как установить Zyntra Launcher на Mac с Apple Silicon, запустить Minecraft без аккаунта Microsoft, что делать с предупреждением macOS и какие версии идут через Rosetta.",
+ "url": "https://ghoperfifj-art.github.io/Zyntra-launcher-/mac/",
+ "inLanguage": "ru",
+ "dateModified": "2026-11-03",
+ "datePublished": "2026-11-03",
+ "image": "https://ghoperfifj-art.github.io/Zyntra-launcher-/img/og.png",
+ "author": {
+  "@type": "Organization",
+  "name": "Zyntra",
+  "url": "https://ghoperfifj-art.github.io/Zyntra-launcher-/"
+ },
+ "publisher": {
+  "@type": "Organization",
+  "name": "Zyntra",
+  "url": "https://ghoperfifj-art.github.io/Zyntra-launcher-/",
+  "logo": {
+   "@type": "ImageObject",
+   "url": "https://ghoperfifj-art.github.io/Zyntra-launcher-/img/logo.png"
+  }
+ },
+ "mainEntityOfPage": "https://ghoperfifj-art.github.io/Zyntra-launcher-/mac/"
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "BreadcrumbList",
+ "itemListElement": [
+  {
+   "@type": "ListItem",
+   "position": 1,
+   "name": "Zyntra Launcher",
+   "item": "https://ghoperfifj-art.github.io/Zyntra-launcher-/"
+  },
+  {
+   "@type": "ListItem",
+   "position": 2,
+   "name": "Minecraft на Mac",
+   "item": "https://ghoperfifj-art.github.io/Zyntra-launcher-/mac/"
+  }
+ ]
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "FAQPage",
+ "mainEntity": [
+  {
+   "@type": "Question",
+   "name": "Есть ли версия для Intel-Mac?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Пока нет: сборка только для Apple Silicon (M1 и новее). Версия для Intel-Mac в планах."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Нужно ли ставить Java на Mac?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Нет. Лаунчер сам скачивает официальную Java от Mojang нужной версии."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Сколько памяти выделять Minecraft на MacBook?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Лаунчер выбирает сам: половину оперативной памяти, от 2 до 8 ГБ. На MacBook Air с 8 ГБ это 4 ГБ — для обычной игры и небольших сборок модов достаточно."
+   }
+  }
+ ]
+}
+</script>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="../">
+      <img src="../img/logo.png" width="38" height="38" alt="Zyntra Launcher">
+      <span><b>ZYNTRA</b><small>LAUNCHER</small></span>
+    </a>
+    <nav class="links">
+      <a href="../guides/">Гайды</a>
+      <a href="../tlauncher-alternative/">Сравнение</a>
+      <a href="../mac/">Mac</a>
+      <a href="../horizon/">Horizon</a>
+    </nav>
+    <a class="btn small primary" href="../#download">Скачать</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <nav class="crumbs" aria-label="Навигация"><a href="../">Главная</a><span>›</span>Minecraft на Mac</nav>
+  <div class="page-head">
+    <h1>Minecraft на Mac M1, M2, M3 и M4</h1>
+    <p class="lead">Zyntra Launcher работает на Mac с процессорами Apple M1, M2, M3 и M4. Установка — перетащить приложение в «Программы»; новые версии Minecraft запускаются нативно на Apple Silicon, старые — через Rosetta.</p>
+    <time class="updated" datetime="2026-11-03">Обновлено 3 ноября 2026</time>
+  </div>
+  <article class="article">
+<div class="cta">
+  <a class="btn primary" href="https://github.com/ghoperfifj-art/Zyntra-launcher-/releases/latest/download/ZyntraLauncher-macOS.dmg">Скачать для Mac (.dmg, ≈ 6 МБ)</a>
+</div>
+
+<h2>Как установить Zyntra Launcher на Mac</h2>
+<ol>
+  <li>Скачайте <a href="https://github.com/ghoperfifj-art/Zyntra-launcher-/releases/latest/download/ZyntraLauncher-macOS.dmg">ZyntraLauncher-macOS.dmg</a>.</li>
+  <li>Откройте файл двойным кликом — появится окно с иконкой лаунчера и папкой «Программы».</li>
+  <li>Перетащите <strong>Zyntra Launcher</strong> на папку «Программы».</li>
+  <li>Откройте «Программы» и запустите лаунчер (первый раз — как описано ниже).</li>
+</ol>
+
+<h2>Что делать, если macOS не даёт открыть лаунчер?</h2>
+<div class="answer">
+  <p>Это нормально для первого запуска: у лаунчера нет платной подписи Apple, поэтому macOS не знает разработчика. Разрешить запуск нужно один раз.</p>
+</div>
+<h3>macOS 14 Sonoma и старше</h3>
+<ol>
+  <li>В «Программах» нажмите на Zyntra Launcher <strong>правой кнопкой</strong> (или с зажатым Control).</li>
+  <li>Выберите «Открыть», затем ещё раз «Открыть» в окне предупреждения.</li>
+</ol>
+<h3>macOS 15 Sequoia и новее</h3>
+<ol>
+  <li>Запустите лаунчер обычным двойным кликом и закройте окно с предупреждением.</li>
+  <li>Откройте <strong>Системные настройки → Конфиденциальность и безопасность</strong>.</li>
+  <li>Внизу, рядом с сообщением о Zyntra Launcher, нажмите <strong>«Всё равно открыть»</strong> и подтвердите паролем.</li>
+</ol>
+<p>Дальше лаунчер открывается как любое приложение.</p>
+
+<h2>Какие версии Minecraft работают на M1?</h2>
+<div class="answer">
+  <p>Все. Версии <strong>1.19 и новее</strong> запускаются нативно на Apple Silicon — быстро и без нагрева. Версии <strong>до 1.19</strong> (например 1.8.9, 1.12.2, 1.16.5) запускаются через Rosetta: у них есть библиотеки только для Intel. Так же делает официальный лаунчер Mojang.</p>
+</div>
+<p>Rosetta macOS предложит установить сама при первом запуске старой версии — согласитесь. Нужная Java (для Apple Silicon или для Intel) скачивается автоматически.</p>
+
+<h2>Где лаунчер хранит игру на Mac?</h2>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Что</th><th>Папка</th></tr></thead>
+  <tbody>
+    <tr><td>Версии, миры, моды</td><td><code>~/Library/Application Support/Zyntra Launcher/minecraft</code></td></tr>
+    <tr><td>Настройки лаунчера</td><td><code>~/Library/Application Support/Zyntra Launcher/zyntra.json</code></td></tr>
+    <tr><td>Версии из официального лаунчера и TLauncher</td><td><code>~/Library/Application Support/minecraft</code> — Zyntra показывает их сам</td></tr>
+  </tbody>
+</table>
+</div>
+<p>Чтобы открыть папку <code>Library</code> в Finder: меню «Переход» → «Переход к папке…» и вставьте путь.</p>
+
+<h2>Работает ли Horizon на Mac?</h2>
+<p>Да. Horizon и Horizon OptiFine скачиваются в версии для Apple Silicon. Для зума в Horizon OptiFine macOS может попросить разрешение <strong>«Мониторинг ввода»</strong> для Zyntra Launcher — без него лаунчер не видит, что вы зажали клавишу зума.</p>
+
+<details>
+  <summary>Есть ли версия для Intel-Mac?</summary>
+  <p>Пока нет: сборка только для Apple Silicon (M1 и новее). Версия для Intel-Mac в планах.</p>
+</details>
+<details>
+  <summary>Нужно ли ставить Java на Mac?</summary>
+  <p>Нет. Лаунчер сам скачивает официальную Java от Mojang нужной версии.</p>
+</details>
+<details>
+  <summary>Сколько памяти выделять Minecraft на MacBook?</summary>
+  <p>Лаунчер выбирает сам: половину оперативной памяти, от 2 до 8 ГБ. На MacBook Air с 8 ГБ это 4 ГБ — для обычной игры и небольших сборок модов достаточно.</p>
+</details>
+  </article>
+  <section class="related"><h2>Читайте также</h2><div class="cards"><a class="card" href="../guides/windows-zashchitila/"><h3>Windows защитила компьютер</h3><p>Почему при запуске установщика Zyntra Launcher появляется окно SmartScreen «Система Windows защитила ваш компьютер» и как запустить установку.</p></a><a class="card" href="../horizon/"><h3>Horizon 26.3</h3><p>Что такое Horizon: Minecraft Java Edition 26.3, переписанный на Rust. Как играть в Horizon через Zyntra Launcher и что даёт версия Horizon OptiFine: настройки графики, зум, шейдеры, моды.</p></a><a class="card" href="../tlauncher-alternative/"><h3>Альтернатива TLauncher</h3><p>Сравнение Zyntra Launcher, TLauncher, официального лаунчера Minecraft и Prism Launcher: реклама, вход без аккаунта Microsoft, моды, Mac M1, исходный код.</p></a><a class="card" href="../guides/"><h3>Гайды</h3><p>Ответы на частые вопросы о Zyntra Launcher: предупреждение «Windows защитила ваш компьютер», сколько памяти выделять Minecraft, как поставить скин, моды и шейдеры, Mac.</p></a></div></section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div>
+      <b style="color:var(--text)">Zyntra Launcher</b> · <a href="https://github.com/ghoperfifj-art/Zyntra-launcher-">GitHub</a><br>
+      Неофициальный проект, не связан с Mojang Studios и Microsoft.<br>Minecraft — торговая марка Mojang и Microsoft.
+    </div>
+    <nav class="foot-links" aria-label="Разделы сайта">
+        <a href="../tlauncher-alternative/">Альтернатива TLauncher</a>
+        <a href="../mac/">Minecraft на Mac M1–M4</a>
+        <a href="../horizon/">Horizon 26.3</a>
+        <a href="../mods/">Как ставить моды</a>
+        <a href="../shaders/">Как ставить шейдеры</a>
+        <a href="../guides/">Все гайды</a>
+        <a href="../changelog/">Что нового</a>
+        <a href="../en/">English</a>
+    </nav>
+  </div>
+</footer>
+</body>
+</html>

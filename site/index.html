@@ -6,6 +6,9 @@
 <title>Zyntra Launcher — лаунчер Minecraft без рекламы</title>
 <meta name="description" content="Лёгкий лаунчер Minecraft на Rust без рекламы: все версии, игра без аккаунта Microsoft, моды, шейдеры, скины и Horizon. Для Windows и Mac.">
 <link rel="canonical" href="https://ghoperfifj-art.github.io/Zyntra-launcher-/">
+<link rel="alternate" hreflang="ru" href="https://ghoperfifj-art.github.io/Zyntra-launcher-/">
+<link rel="alternate" hreflang="en" href="https://ghoperfifj-art.github.io/Zyntra-launcher-/en/">
+<link rel="alternate" hreflang="x-default" href="https://ghoperfifj-art.github.io/Zyntra-launcher-/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Zyntra Launcher">
 <meta property="og:locale" content="ru_RU">
@@ -69,7 +72,7 @@
    "name": "Это бесплатно?",
    "acceptedAnswer": {
     "@type": "Answer",
-    "text": "Да, полностью. Без рекламы, подписок и платных функций. Исходный код открыт на GitHub."
+    "text": "Да, полностью. Без рекламы, подписок и платных функций. Исходный код опубликован на GitHub."
    }
   },
   {
@@ -133,194 +136,7 @@
  }
 }
 </script>
-<style>
-/* Fonts served from this site (Inter, Unbounded: SIL Open Font License), Cyrillic and Latin only */
-@font-face { font-family: 'Inter'; font-weight: 400 700; font-display: swap; src: url(fonts/inter-cyrillic.woff2) format('woff2'); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
-@font-face { font-family: 'Inter'; font-weight: 400 700; font-display: swap; src: url(fonts/inter-latin.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-@font-face { font-family: 'Unbounded'; font-weight: 600 800; font-display: swap; src: url(fonts/unbounded-cyrillic.woff2) format('woff2'); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
-@font-face { font-family: 'Unbounded'; font-weight: 600 800; font-display: swap; src: url(fonts/unbounded-latin.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-:root {
-  --bg: #0d0a14;
-  --bg2: #15101f;
-  --card: #1a1426;
-  --line: #2c2140;
-  --text: #f1ecf8;
-  --muted: #a99cbd;
-  --accent: #c77dff;
-  --accent2: #9d4edd;
-  --glow: rgba(199, 125, 255, .35);
-  --radius: 22px;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body {
-  background: var(--bg);
-  color: var(--text);
-  font: 16px/1.6 Inter, system-ui, sans-serif;
-  overflow-x: hidden;
-}
-a { color: inherit; text-decoration: none; }
-img { max-width: 100%; height: auto; display: block; }
-.wrap { width: min(1160px, 100% - 32px); margin-inline: auto; }
-
-/* Background: soft purple light and a faint pixel grid */
-body::before {
-  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
-  background:
-    radial-gradient(900px 600px at 80% -10%, rgba(157, 78, 221, .28), transparent 60%),
-    radial-gradient(700px 500px at -10% 30%, rgba(199, 125, 255, .14), transparent 60%),
-    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px) 0 0 / 32px 32px,
-    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px) 0 0 / 32px 32px,
-    var(--bg);
-}
-
-/* Header */
-header {
-  position: sticky; top: 0; z-index: 10;
-  backdrop-filter: blur(14px);
-  background: rgba(13, 10, 20, .72);
-  border-bottom: 1px solid var(--line);
-}
-.nav { display: flex; align-items: center; justify-content: space-between; height: 68px; gap: 16px; }
-.brand { display: flex; align-items: center; gap: 12px; }
-.brand img { width: 38px; height: 38px; }
-.brand b { font: 800 18px Unbounded, sans-serif; letter-spacing: .02em; }
-.brand small { display: block; font-size: 10px; letter-spacing: .3em; color: var(--muted); margin-top: -4px; }
-.links { display: flex; gap: 26px; color: var(--muted); font-weight: 500; font-size: 15px; }
-.links a:hover { color: var(--text); }
-
-/* Buttons */
-.btn {
-  display: inline-flex; align-items: center; gap: 10px;
-  padding: 14px 24px; border-radius: 14px; font-weight: 600;
-  border: 1px solid var(--line); background: var(--card);
-  transition: transform .15s, box-shadow .15s, border-color .15s;
-}
-.btn:hover { transform: translateY(-2px); border-color: var(--accent2); }
-.btn.primary {
-  background: linear-gradient(135deg, #d9a3ff, var(--accent2));
-  color: #1b0f2b; border: 0;
-  box-shadow: 0 10px 40px var(--glow);
-}
-.btn.primary:hover { box-shadow: 0 14px 50px rgba(199, 125, 255, .55); }
-.btn svg { width: 20px; height: 20px; flex: none; }
-.btn .sub { display: block; font-size: 12px; font-weight: 500; opacity: .75; }
-.btn.small { padding: 9px 16px; font-size: 14px; border-radius: 11px; }
-
-/* Hero */
-.hero { padding: 84px 0 40px; text-align: center; position: relative; }
-.badge {
-  display: inline-flex; gap: 8px; align-items: center;
-  padding: 6px 14px; border-radius: 99px; font-size: 13px; color: var(--accent);
-  border: 1px solid rgba(199,125,255,.35); background: rgba(199,125,255,.08);
-}
-.hero h1 {
-  font: 800 clamp(34px, 6.4vw, 72px)/1.05 Unbounded, sans-serif;
-  margin: 22px auto 18px; max-width: 900px; letter-spacing: -.01em;
-}
-.hero h1 span { color: var(--accent); text-shadow: 0 0 40px var(--glow); }
-.hero p.lead { color: var(--muted); font-size: clamp(16px, 2.2vw, 19px); max-width: 640px; margin: 0 auto 34px; }
-.cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; text-align: left; }
-.note { color: var(--muted); font-size: 13px; margin-top: 16px; }
-.note a { color: var(--accent); }
-
-/* Blocks far behind the hero, out of focus like a background: the further, the smaller,
-   dimmer and blurrier. They drift slowly and never cover the text. */
-.hero { isolation: isolate; }
-.bg-blocks { position: absolute; inset: 0 -8%; z-index: -1; pointer-events: none; overflow: hidden; }
-.bg-blocks img {
-  position: absolute; width: var(--s); opacity: var(--o); filter: blur(var(--b)) saturate(.8);
-  animation: drift 14s ease-in-out infinite; animation-delay: var(--d, 0s);
-}
-@keyframes drift { 50% { transform: translateY(-18px) rotate(6deg); } }
-
-.shot {
-  margin: 56px auto 0; border-radius: var(--radius); overflow: hidden;
-  border: 1px solid var(--line);
-  box-shadow: 0 40px 120px rgba(0,0,0,.6), 0 0 0 1px rgba(199,125,255,.08), 0 0 80px rgba(157,78,221,.18);
-}
-
-/* Sections */
-section { padding: 90px 0 0; }
-.head { text-align: center; max-width: 680px; margin: 0 auto 44px; }
-.head h2 { font: 800 clamp(26px, 4vw, 40px)/1.15 Unbounded, sans-serif; margin-bottom: 12px; }
-.head p { color: var(--muted); }
-
-.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-.card {
-  background: linear-gradient(180deg, var(--card), var(--bg2));
-  border: 1px solid var(--line); border-radius: var(--radius); padding: 26px;
-}
-.card .ico {
-  width: 46px; height: 46px; border-radius: 13px; display: grid; place-items: center;
-  background: rgba(199,125,255,.12); color: var(--accent); margin-bottom: 16px;
-}
-.card .ico svg { width: 24px; height: 24px; }
-.card h3 { font-size: 18px; margin-bottom: 6px; }
-.card p { color: var(--muted); font-size: 15px; }
-
-/* Horizon */
-.horizon {
-  display: grid; grid-template-columns: 1fr 1.25fr; gap: 40px; align-items: center;
-  background: linear-gradient(135deg, #22163a, #120d1c 60%);
-  border: 1px solid var(--line); border-radius: 28px; padding: 46px;
-  position: relative; overflow: hidden;
-}
-.horizon::after {
-  content: ""; position: absolute; width: 420px; height: 420px; right: -120px; top: -160px;
-  background: radial-gradient(circle, rgba(199,125,255,.25), transparent 65%);
-}
-.horizon h2 { font: 800 clamp(26px, 3.6vw, 38px)/1.15 Unbounded, sans-serif; margin: 14px 0; }
-.horizon p { color: var(--muted); margin-bottom: 18px; }
-.horizon ul { list-style: none; display: grid; gap: 10px; }
-.horizon li { display: flex; gap: 10px; align-items: flex-start; }
-.horizon li::before { content: ""; flex: none; width: 10px; height: 10px; margin-top: 8px; background: var(--accent); box-shadow: 0 0 12px var(--accent); }
-.horizon img { border-radius: 16px; border: 1px solid var(--line); position: relative; z-index: 1; }
-
-/* Gallery */
-/* One screenshot per row, at full width, so the launcher's text stays readable. */
-.gallery { display: grid; grid-template-columns: 1fr; gap: 28px; }
-.gallery figure { border-radius: 18px; overflow: hidden; border: 1px solid var(--line); background: var(--card); }
-.gallery figcaption { padding: 12px 16px; color: var(--muted); font-size: 14px; }
-
-/* Download */
-.dl { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-.dl .card { display: flex; flex-direction: column; gap: 14px; }
-.dl .card { cursor: pointer; transition: border-color .2s, box-shadow .2s; }
-.dl .card.current { border-color: var(--accent2); box-shadow: 0 0 0 1px var(--accent2), 0 20px 60px rgba(157,78,221,.2); }
-.dl h3 { display: flex; align-items: center; gap: 10px; font-size: 22px; }
-.dl h3 svg { width: 26px; height: 26px; }
-.dl ol { padding-left: 20px; color: var(--muted); font-size: 15px; display: grid; gap: 6px; }
-.dl .btn { align-self: flex-start; margin-top: auto; }
-.tag { font-size: 12px; color: var(--accent); border: 1px solid rgba(199,125,255,.35); padding: 2px 10px; border-radius: 99px; margin-left: auto; font-weight: 500; }
-
-/* FAQ */
-.faq { max-width: 820px; margin: 0 auto; display: grid; gap: 12px; }
-details { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px 22px; }
-details[open] { border-color: #43305f; }
-summary { cursor: pointer; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
-summary::-webkit-details-marker { display: none; }
-summary::after { content: "+"; color: var(--accent); font-size: 22px; line-height: 1; }
-details[open] summary::after { content: "−"; }
-details p { color: var(--muted); margin-top: 10px; }
-
-footer { margin-top: 100px; border-top: 1px solid var(--line); padding: 34px 0 40px; color: var(--muted); font-size: 14px; }
-.foot { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; align-items: center; }
-.foot a { color: var(--text); }
-
-@media (max-width: 900px) {
-  .grid { grid-template-columns: 1fr 1fr; }
-  .horizon { grid-template-columns: 1fr; padding: 28px; }
-  .bg-blocks img:nth-child(n+5) { display: none; }
-}
-@media (max-width: 640px) {
-  .links { display: none; }
-  .grid, .gallery, .dl { grid-template-columns: 1fr; }
-  .hero { padding-top: 54px; }
-  .cta .btn { width: 100%; justify-content: center; }
-  section { padding-top: 64px; }
-}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -333,7 +149,7 @@ footer { margin-top: 100px; border-top: 1px solid var(--line); padding: 34px 0 4
     <nav class="links">
       <a href="#features">Возможности</a>
       <a href="#horizon">Horizon</a>
-      <a href="#screens">Скриншоты</a>
+      <a href="guides/">Гайды</a>
       <a href="#faq">Вопросы</a>
     </nav>
     <a class="btn small primary" href="#download">Скачать</a>
@@ -363,7 +179,7 @@ footer { margin-top: 100px; border-top: 1px solid var(--line); padding: 34px 0 4
         <span>Скачать для Mac<span class="sub">M1 и новее · .dmg · 6 МБ</span></span>
       </a>
     </div>
-    <p class="note">Открытый исходный код на <a href="https://github.com/ghoperfifj-art/Zyntra-launcher-">GitHub</a></p>
+    <p class="note">Исходный код на <a href="https://github.com/ghoperfifj-art/Zyntra-launcher-">GitHub</a></p>
     <img class="shot" src="img/home.webp" fetchpriority="high" width="1475" height="875" alt="Главный экран Zyntra Launcher">
   </div>
 
@@ -422,6 +238,7 @@ footer { margin-top: 100px; border-top: 1px solid var(--line); padding: 34px 0 4
             <li>Нативные моды: Freecam, мини-карта и другие</li>
             <li>Мод Zyntra Crystals: кристальный блок, осколки и меч</li>
           </ul>
+          <p style="margin:18px 0 0"><a class="btn small" href="horizon/">Подробнее о Horizon →</a></p>
         </div>
         <img src="img/fine.webp" width="1477" height="852" alt="Настройки Zyntra Fine для Horizon" loading="lazy">
       </div>
@@ -483,7 +300,7 @@ footer { margin-top: 100px; border-top: 1px solid var(--line); padding: 34px 0 4
       <div class="faq">
         <details>
           <summary>Это бесплатно?</summary>
-          <p>Да, полностью. Без рекламы, подписок и платных функций. Исходный код открыт на GitHub.</p>
+          <p>Да, полностью. Без рекламы, подписок и платных функций. Исходный код опубликован на GitHub.</p>
         </details>
         <details>
           <summary>Нужен ли лицензионный Minecraft?</summary>
@@ -506,6 +323,7 @@ footer { margin-top: 100px; border-top: 1px solid var(--line); padding: 34px 0 4
           <p>Пока сборка для Mac только для Apple Silicon (M1 и новее). Версии для Intel-Mac и Linux — в планах.</p>
         </details>
       </div>
+      <p class="note" style="text-align:center">Больше ответов — в <a href="guides/">гайдах</a>: <a href="guides/windows-zashchitila/">Windows защитила компьютер</a>, <a href="guides/pamyat/">сколько памяти выделять</a>, <a href="guides/skin/">как поставить скин</a>.</p>
     </div>
   </section>
 </main>
@@ -514,9 +332,18 @@ footer { margin-top: 100px; border-top: 1px solid var(--line); padding: 34px 0 4
   <div class="wrap foot">
     <div>
       <b style="color:var(--text)">Zyntra Launcher</b> · <a href="https://github.com/ghoperfifj-art/Zyntra-launcher-">GitHub</a><br>
-      Неофициальный проект, не связан с Mojang Studios и Microsoft. Minecraft — торговая марка Mojang и Microsoft.
+      Неофициальный проект, не связан с Mojang Studios и Microsoft.<br>Minecraft — торговая марка Mojang и Microsoft.<br>
+      <span class="lang">Язык: <b>Русский</b> · <a href="en/" hreflang="en">English</a></span>
     </div>
-    <a class="btn small" href="#">Наверх ↑</a>
+    <nav class="foot-links" aria-label="Разделы сайта">
+        <a href="tlauncher-alternative/">Альтернатива TLauncher</a>
+        <a href="mac/">Minecraft на Mac M1–M4</a>
+        <a href="horizon/">Horizon 26.3</a>
+        <a href="mods/">Как ставить моды</a>
+        <a href="shaders/">Как ставить шейдеры</a>
+        <a href="guides/">Все гайды</a>
+        <a href="changelog/">Что нового</a>
+    </nav>
   </div>
 </footer>
 

@@ -1,0 +1,73 @@
+path: mac/
+title: Minecraft на Mac M1, M2, M3, M4 — установка Zyntra Launcher
+h1: Minecraft на Mac M1, M2, M3 и M4
+crumb: Minecraft на Mac
+description: Как установить Zyntra Launcher на Mac с Apple Silicon, запустить Minecraft без аккаунта Microsoft, что делать с предупреждением macOS и какие версии идут через Rosetta.
+lead: Zyntra Launcher работает на Mac с процессорами Apple M1, M2, M3 и M4. Установка — перетащить приложение в «Программы»; новые версии Minecraft запускаются нативно на Apple Silicon, старые — через Rosetta.
+updated: 2026-11-03
+related: guides/windows-zashchitila/, horizon/, tlauncher-alternative/, guides/
+type: HowTo
+---
+<div class="cta">
+  <a class="btn primary" href="{releases}ZyntraLauncher-macOS.dmg">Скачать для Mac (.dmg, ≈ 6 МБ)</a>
+</div>
+
+<h2>Как установить Zyntra Launcher на Mac</h2>
+<ol>
+  <li>Скачайте <a href="{releases}ZyntraLauncher-macOS.dmg">ZyntraLauncher-macOS.dmg</a>.</li>
+  <li>Откройте файл двойным кликом — появится окно с иконкой лаунчера и папкой «Программы».</li>
+  <li>Перетащите <strong>Zyntra Launcher</strong> на папку «Программы».</li>
+  <li>Откройте «Программы» и запустите лаунчер (первый раз — как описано ниже).</li>
+</ol>
+
+<h2>Что делать, если macOS не даёт открыть лаунчер?</h2>
+<div class="answer">
+  <p>Это нормально для первого запуска: у лаунчера нет платной подписи Apple, поэтому macOS не знает разработчика. Разрешить запуск нужно один раз.</p>
+</div>
+<h3>macOS 14 Sonoma и старше</h3>
+<ol>
+  <li>В «Программах» нажмите на Zyntra Launcher <strong>правой кнопкой</strong> (или с зажатым Control).</li>
+  <li>Выберите «Открыть», затем ещё раз «Открыть» в окне предупреждения.</li>
+</ol>
+<h3>macOS 15 Sequoia и новее</h3>
+<ol>
+  <li>Запустите лаунчер обычным двойным кликом и закройте окно с предупреждением.</li>
+  <li>Откройте <strong>Системные настройки → Конфиденциальность и безопасность</strong>.</li>
+  <li>Внизу, рядом с сообщением о Zyntra Launcher, нажмите <strong>«Всё равно открыть»</strong> и подтвердите паролем.</li>
+</ol>
+<p>Дальше лаунчер открывается как любое приложение.</p>
+
+<h2>Какие версии Minecraft работают на M1?</h2>
+<div class="answer">
+  <p>Все. Версии <strong>1.19 и новее</strong> запускаются нативно на Apple Silicon — быстро и без нагрева. Версии <strong>до 1.19</strong> (например 1.8.9, 1.12.2, 1.16.5) запускаются через Rosetta: у них есть библиотеки только для Intel. Так же делает официальный лаунчер Mojang.</p>
+</div>
+<p>Rosetta macOS предложит установить сама при первом запуске старой версии — согласитесь. Нужная Java (для Apple Silicon или для Intel) скачивается автоматически.</p>
+
+<h2>Где лаунчер хранит игру на Mac?</h2>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Что</th><th>Папка</th></tr></thead>
+  <tbody>
+    <tr><td>Версии, миры, моды</td><td><code>~/Library/Application Support/Zyntra Launcher/minecraft</code></td></tr>
+    <tr><td>Настройки лаунчера</td><td><code>~/Library/Application Support/Zyntra Launcher/zyntra.json</code></td></tr>
+    <tr><td>Версии из официального лаунчера и TLauncher</td><td><code>~/Library/Application Support/minecraft</code> — Zyntra показывает их сам</td></tr>
+  </tbody>
+</table>
+</div>
+<p>Чтобы открыть папку <code>Library</code> в Finder: меню «Переход» → «Переход к папке…» и вставьте путь.</p>
+
+<h2>Работает ли Horizon на Mac?</h2>
+<p>Да. Horizon и Horizon OptiFine скачиваются в версии для Apple Silicon. Для зума в Horizon OptiFine macOS может попросить разрешение <strong>«Мониторинг ввода»</strong> для Zyntra Launcher — без него лаунчер не видит, что вы зажали клавишу зума.</p>
+
+<details>
+  <summary>Есть ли версия для Intel-Mac?</summary>
+  <p>Пока нет: сборка только для Apple Silicon (M1 и новее). Версия для Intel-Mac в планах.</p>
+</details>
+<details>
+  <summary>Нужно ли ставить Java на Mac?</summary>
+  <p>Нет. Лаунчер сам скачивает официальную Java от Mojang нужной версии.</p>
+</details>
+<details>
+  <summary>Сколько памяти выделять Minecraft на MacBook?</summary>
+  <p>Лаунчер выбирает сам: половину оперативной памяти, от 2 до 8 ГБ. На MacBook Air с 8 ГБ это 4 ГБ — для обычной игры и небольших сборок модов достаточно.</p>
+</details>

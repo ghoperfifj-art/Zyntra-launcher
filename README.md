@@ -63,6 +63,7 @@ cargo build --release
 - Установщик Windows: `installer/build.ps1` (нужен [Inno Setup 6](https://jrsoftware.org/isinfo.php)).
 - Приложение и `.dmg` для Mac: `bash macos/build-app.sh` (на Mac).
 - Релиз: тег `v*` (например `git tag v0.1.0 && git push --tags`) — GitHub Actions соберёт обе версии и выложит их в Releases.
+- Сайт: `site/` (главная — `site/index.html`, английская — `site/en/index.html`). Статьи и гайды пишутся в `site-src/pages/`, после правки запустите `python tools/build_site.py` — он соберёт страницы и `sitemap.xml`. Всё в `site/` публикуется на GitHub Pages автоматически.
 
 ---
 

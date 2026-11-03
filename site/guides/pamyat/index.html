@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Сколько оперативной памяти выделять Minecraft — Zyntra Launcher</title>
+<meta name="description" content="Сколько ОЗУ выделять Minecraft без модов и со сборками, как Zyntra Launcher подбирает память автоматически и что делать, если игре не хватает памяти.">
+<link rel="canonical" href="https://ghoperfifj-art.github.io/Zyntra-launcher-/guides/pamyat/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Zyntra Launcher">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:url" content="https://ghoperfifj-art.github.io/Zyntra-launcher-/guides/pamyat/">
+<meta property="og:title" content="Сколько оперативной памяти выделять Minecraft — Zyntra Launcher">
+<meta property="og:description" content="Сколько ОЗУ выделять Minecraft без модов и со сборками, как Zyntra Launcher подбирает память автоматически и что делать, если игре не хватает памяти.">
+<meta property="og:image" content="https://ghoperfifj-art.github.io/Zyntra-launcher-/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="article:modified_time" content="2026-11-03">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ghoperfifj-art.github.io/Zyntra-launcher-/img/og.png">
+<meta name="theme-color" content="#0d0a14">
+<link rel="icon" type="image/png" href="../../img/favicon.png">
+<link rel="preload" href="../../fonts/inter-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../fonts/unbounded-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../../style.css">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "Article",
+ "headline": "Сколько оперативной памяти выделять Minecraft",
+ "description": "Сколько ОЗУ выделять Minecraft без модов и со сборками, как Zyntra Launcher подбирает память автоматически и что делать, если игре не хватает памяти.",
+ "url": "https://ghoperfifj-art.github.io/Zyntra-launcher-/guides/pamyat/",
+ "inLanguage": "ru",
+ "dateModified": "2026-11-03",
+ "datePublished": "2026-11-03",
+ "image": "https://ghoperfifj-art.github.io/Zyntra-launcher-/img/og.png",
+ "author": {
+  "@type": "Organization",
+  "name": "Zyntra",
+  "url": "https://ghoperfifj-art.github.io/Zyntra-launcher-/"
+ },
+ "publisher": {
+  "@type": "Organization",
+  "name": "Zyntra",
+  "url": "https://ghoperfifj-art.github.io/Zyntra-launcher-/",
+  "logo": {
+   "@type": "ImageObject",
+   "url": "https://ghoperfifj-art.github.io/Zyntra-launcher-/img/logo.png"
+  }
+ },
+ "mainEntityOfPage": "https://ghoperfifj-art.github.io/Zyntra-launcher-/guides/pamyat/"
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "BreadcrumbList",
+ "itemListElement": [
+  {
+   "@type": "ListItem",
+   "position": 1,
+   "name": "Zyntra Launcher",
+   "item": "https://ghoperfifj-art.github.io/Zyntra-launcher-/"
+  },
+  {
+   "@type": "ListItem",
+   "position": 2,
+   "name": "Гайды",
+   "item": "https://ghoperfifj-art.github.io/Zyntra-launcher-/guides/"
+  },
+  {
+   "@type": "ListItem",
+   "position": 3,
+   "name": "Память для Minecraft",
+   "item": "https://ghoperfifj-art.github.io/Zyntra-launcher-/guides/pamyat/"
+  }
+ ]
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "FAQPage",
+ "mainEntity": [
+  {
+   "@type": "Question",
+   "name": "Игра пишет «Out of memory» или вылетает",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Увеличьте память на 1–2 ГБ. Если не помогает — в сборке, скорее всего, есть мод с утечкой памяти: смотрите логи игры в разделе «Консоль»."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Сколько памяти нужно на слабом ПК с 4 ГБ?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Лаунчер выделит 2 ГБ — для игры без модов этого хватает. На таком ПК лучше играть в Horizon с пресетом «Слабый ПК»: он не использует Java."
+   }
+  }
+ ]
+}
+</script>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="../../">
+      <img src="../../img/logo.png" width="38" height="38" alt="Zyntra Launcher">
+      <span><b>ZYNTRA</b><small>LAUNCHER</small></span>
+    </a>
+    <nav class="links">
+      <a href="../../guides/">Гайды</a>
+      <a href="../../tlauncher-alternative/">Сравнение</a>
+      <a href="../../mac/">Mac</a>
+      <a href="../../horizon/">Horizon</a>
+    </nav>
+    <a class="btn small primary" href="../../#download">Скачать</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <nav class="crumbs" aria-label="Навигация"><a href="../../">Главная</a><span>›</span><a href="../../guides/">Гайды</a><span>›</span>Память для Minecraft</nav>
+  <div class="page-head">
+    <h1>Сколько оперативной памяти выделять Minecraft</h1>
+    <p class="lead">Zyntra Launcher подбирает память сам — половину оперативной памяти компьютера, от 2 до 8 ГБ. Этого хватает для обычной игры и большинства сборок; вручную менять стоит только для больших модпаков.</p>
+    <time class="updated" datetime="2026-11-03">Обновлено 3 ноября 2026</time>
+  </div>
+  <article class="article">
+<h2>Сколько памяти нужно?</h2>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Как играете</th><th>Сколько выделить</th></tr></thead>
+  <tbody>
+    <tr><td>Без модов</td><td>2–4 ГБ</td></tr>
+    <tr><td>Несколько модов, шейдеры</td><td>4–6 ГБ</td></tr>
+    <tr><td>Большие сборки (100+ модов)</td><td>6–8 ГБ</td></tr>
+    <tr><td>Horizon</td><td>Настраивать не нужно — Horizon управляет памятью сам</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Как лаунчер выбирает память?</h2>
+<div class="answer">
+  <p>При включённом режиме «Авто» лаунчер берёт <strong>половину оперативной памяти</strong>, но не меньше 2 ГБ и не больше 8 ГБ. Максимум на ползунке — вся память минус 2 ГБ, которые остаются системе. Рекомендуемое значение отмечено на ползунке зелёной меткой.</p>
+</div>
+<p>Примеры: при 8 ГБ памяти лаунчер выделит 4 ГБ, при 16 ГБ — 8 ГБ.</p>
+
+<h2>Как поменять вручную</h2>
+<ol>
+  <li>На главном экране в карточке «Профиль» нажмите «Авто», чтобы выключить автоматический режим.</li>
+  <li>Передвиньте ползунок «Память».</li>
+  <li>Значение сохранится и будет использоваться для всех Java-версий.</li>
+</ol>
+
+<h2>Почему не стоит выделять всю память?</h2>
+<p>Если отдать игре почти всю память, системе и самой Java не хватит места: начнутся подтормаживания, а Windows станет сбрасывать данные на диск. Больше 8 ГБ обычному Minecraft почти никогда не нужно.</p>
+
+<details>
+  <summary>Игра пишет «Out of memory» или вылетает</summary>
+  <p>Увеличьте память на 1–2 ГБ. Если не помогает — в сборке, скорее всего, есть мод с утечкой памяти: смотрите логи игры в разделе «Консоль».</p>
+</details>
+<details>
+  <summary>Сколько памяти нужно на слабом ПК с 4 ГБ?</summary>
+  <p>Лаунчер выделит 2 ГБ — для игры без модов этого хватает. На таком ПК лучше играть в Horizon с пресетом «Слабый ПК»: он не использует Java.</p>
+</details>
+  </article>
+  <section class="related"><h2>Читайте также</h2><div class="cards"><a class="card" href="../../horizon/"><h3>Horizon 26.3</h3><p>Что такое Horizon: Minecraft Java Edition 26.3, переписанный на Rust. Как играть в Horizon через Zyntra Launcher и что даёт версия Horizon OptiFine: настройки графики, зум, шейдеры, моды.</p></a><a class="card" href="../../mods/"><h3>Моды</h3><p>Установка модов Minecraft через Zyntra Launcher: поиск по каталогу Modrinth, Fabric, Forge и NeoForge, автоматические зависимости, своя папка модов для каждой версии.</p></a><a class="card" href="../../shaders/"><h3>Шейдеры</h3><p>Установка шейдеров Minecraft через Zyntra Launcher: каталог Modrinth, шейдеры для Horizon OptiFine без отдельного мода и для Java-версий через Iris или OptiFine.</p></a></div></section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div>
+      <b style="color:var(--text)">Zyntra Launcher</b> · <a href="https://github.com/ghoperfifj-art/Zyntra-launcher-">GitHub</a><br>
+      Неофициальный проект, не связан с Mojang Studios и Microsoft.<br>Minecraft — торговая марка Mojang и Microsoft.
+    </div>
+    <nav class="foot-links" aria-label="Разделы сайта">
+        <a href="../../tlauncher-alternative/">Альтернатива TLauncher</a>
+        <a href="../../mac/">Minecraft на Mac M1–M4</a>
+        <a href="../../horizon/">Horizon 26.3</a>
+        <a href="../../mods/">Как ставить моды</a>
+        <a href="../../shaders/">Как ставить шейдеры</a>
+        <a href="../../guides/">Все гайды</a>
+        <a href="../../changelog/">Что нового</a>
+        <a href="../../en/">English</a>
+    </nav>
+  </div>
+</footer>
+</body>
+</html>

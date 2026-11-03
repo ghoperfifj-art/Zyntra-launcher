@@ -1,0 +1,63 @@
+path: horizon/
+title: Horizon 26.3 — Minecraft на Rust для слабых ПК | Zyntra Launcher
+h1: Horizon 26.3 — Minecraft, переписанный на Rust
+crumb: Horizon 26.3
+description: Что такое Horizon: Minecraft Java Edition 26.3, переписанный на Rust. Как играть в Horizon через Zyntra Launcher и что даёт версия Horizon OptiFine: настройки графики, зум, шейдеры, моды.
+lead: Horizon — неофициальный проект, который переписал Minecraft Java Edition 26.3 на Rust. Он быстрее запускается и легче работает на слабом железе. Zyntra Launcher ставит Horizon в один клик и добавляет версию Horizon OptiFine — с настройками графики, зумом, шейдерами и модами.
+updated: 2026-11-03
+related: shaders/, mods/, tlauncher-alternative/, mac/
+---
+<h2>Что такое Horizon?</h2>
+<div class="answer">
+  <p>Horizon (<a href="https://github.com/horizon-rust/horizon">horizon-rust/horizon</a>) — это Minecraft Java Edition версии 26.3, заново написанный на языке Rust. Java для игры не нужна: Horizon — обычная программа для Windows, macOS и Linux. Миры, серверы и ресурс-паки — те же, что в Minecraft 26.3.</p>
+</div>
+<p>Horizon не содержит текстур и звуков Minecraft. При первом запуске их готовят из официальных файлов игры 26.3 — Zyntra Launcher делает это сам: скачивает нужные файлы Mojang и запускает подготовку.</p>
+
+<h2>Чем Horizon лучше обычного Minecraft на слабом ПК?</h2>
+<ul>
+  <li><strong>Нет Java-машины.</strong> Игра не тратит время и память на запуск Java — старт и вход в мир быстрее.</li>
+  <li><strong>Память расходуется бережнее.</strong> Нет «сборщика мусора» Java, из-за которого обычный Minecraft подтормаживает.</li>
+  <li><strong>Те же миры и серверы.</strong> Horizon совместим с Minecraft 26.3: можно играть по сети, открывать мир для LAN, заходить на серверы 26.3.</li>
+</ul>
+
+<h2>Horizon 26.3 и Horizon OptiFine — в чём разница?</h2>
+<div class="table-wrap">
+<table>
+  <thead><tr><th></th><th>Horizon 26.3</th><th>Horizon OptiFine</th></tr></thead>
+  <tbody>
+    <tr><td>Игра</td><td>Horizon как есть</td><td>Тот же Horizon, те же миры</td></tr>
+    <tr><td>Настройки графики</td><td>Обычные</td><td>Zyntra Fine: пресеты «Слабый ПК», «Баланс», «Качество», подгрузка чанков, лимит FPS, отсечение невидимого</td></tr>
+    <tr><td>Зум</td><td class="no">Нет</td><td class="yes">По клавише (C по умолчанию)</td></tr>
+    <tr><td>Динамический свет</td><td class="no">Нет</td><td class="yes">Факел в руке освещает всё вокруг</td></tr>
+    <tr><td>Шейдеры</td><td class="no">Нет</td><td class="yes">Паки OptiFine/Iris (.zip), например BSL</td></tr>
+    <tr><td>Нативные моды</td><td class="no">Нет</td><td class="yes">Freecam, мини-карта и другие из каталога Horizon</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Как играть в Horizon через Zyntra Launcher</h2>
+<ol>
+  <li><a href="{up}#download">Скачайте и установите Zyntra Launcher</a>.</li>
+  <li>На главном экране в списке «Версии» выберите <strong>Horizon 26.3</strong> или <strong>Horizon OptiFine 26.3</strong>.</li>
+  <li>Нажмите «Играть». В первый раз лаунчер скачает Horizon (≈ 40 МБ) и подготовит файлы игры — это занимает несколько минут.</li>
+</ol>
+<p>Настройки Horizon OptiFine — в разделе <strong>Zyntra Fine</strong> в левом меню лаунчера.</p>
+
+<h2>Какие настройки ставить на слабом ПК?</h2>
+<div class="answer">
+  <p>Пресет <strong>«Слабый ПК»</strong> в Zyntra Fine: дальность 8 чанков, симуляция 6, лимит 60 FPS, плавная подгрузка чанков, без облаков и теней. Лаунчер включает его сам, если в компьютере меньше 12 ГБ памяти.</p>
+</div>
+<p>Тяжёлые шейдеры вроде BSL при входе в мир компилируются несколько секунд — на встроенной графике это видно как короткое зависание. Для слабого ПК лучше играть без шейдеров.</p>
+
+<details>
+  <summary>Нужна ли лицензия Minecraft для Horizon?</summary>
+  <p>Horizon готовит текстуры и звуки из официальных файлов Minecraft 26.3, которые Zyntra скачивает с серверов Mojang. Играть можно с офлайн-профилем, как и в обычных версиях.</p>
+</details>
+<details>
+  <summary>Работают ли моды Forge и Fabric в Horizon?</summary>
+  <p>Нет: Horizon написан на Rust, Java-моды в нём не запускаются. У Horizon свои моды — контентные (блоки и предметы) и нативные (код на Rust). Они есть в лаунчере в разделе «Моды» → «Horizon».</p>
+</details>
+<details>
+  <summary>Можно ли играть в Horizon с друзьями?</summary>
+  <p>Да: откройте мир для сети (LAN) или зайдите на сервер версии 26.3. Друзья могут играть и в обычном Minecraft 26.3.</p>
+</details>

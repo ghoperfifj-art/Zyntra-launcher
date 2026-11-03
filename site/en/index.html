@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zyntra Launcher — ad-free Minecraft launcher for Windows and Mac</title>
+<meta name="description" content="A lightweight, ad-free Minecraft launcher written in Rust: every version, play without a Microsoft account, mods, shaders, skins and Horizon. For Windows and Mac.">
+<link rel="canonical" href="https://ghoperfifj-art.github.io/Zyntra-launcher-/en/">
+<link rel="alternate" hreflang="ru" href="https://ghoperfifj-art.github.io/Zyntra-launcher-/">
+<link rel="alternate" hreflang="en" href="https://ghoperfifj-art.github.io/Zyntra-launcher-/en/">
+<link rel="alternate" hreflang="x-default" href="https://ghoperfifj-art.github.io/Zyntra-launcher-/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Zyntra Launcher">
+<meta property="og:locale" content="en_US">
+<meta property="og:url" content="https://ghoperfifj-art.github.io/Zyntra-launcher-/en/">
+<meta property="og:title" content="Zyntra Launcher — ad-free Minecraft launcher">
+<meta property="og:description" content="A free Minecraft launcher written in Rust: every version, offline profile, mods, shaders, skins and Horizon. Windows and Mac.">
+<meta property="og:image" content="https://ghoperfifj-art.github.io/Zyntra-launcher-/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Zyntra Launcher — the launcher home screen">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Zyntra Launcher — ad-free Minecraft launcher">
+<meta name="twitter:description" content="A free Minecraft launcher written in Rust: every version, offline profile, mods, shaders, skins and Horizon.">
+<meta name="twitter:image" content="https://ghoperfifj-art.github.io/Zyntra-launcher-/img/og.png">
+<meta name="theme-color" content="#0d0a14">
+<link rel="icon" type="image/png" href="../img/favicon.png">
+<link rel="apple-touch-icon" href="../img/logo.png">
+<link rel="preload" href="../fonts/inter-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../fonts/unbounded-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "SoftwareApplication",
+ "name": "Zyntra Launcher",
+ "url": "https://ghoperfifj-art.github.io/Zyntra-launcher-/en/",
+ "description": "A free Minecraft launcher written in Rust for Windows and macOS: every game version, offline profile, mods and shaders from Modrinth, skins and Horizon.",
+ "applicationCategory": "GameApplication",
+ "operatingSystem": "Windows 10, Windows 11, macOS 11+ (Apple Silicon)",
+ "softwareVersion": "0.1.1",
+ "dateModified": "2026-11-03",
+ "inLanguage": "en",
+ "isAccessibleForFree": true,
+ "offers": {
+  "@type": "Offer",
+  "price": "0",
+  "priceCurrency": "USD"
+ },
+ "downloadUrl": [
+  "https://github.com/ghoperfifj-art/Zyntra-launcher-/releases/latest/download/ZyntraSetup-Windows.exe",
+  "https://github.com/ghoperfifj-art/Zyntra-launcher-/releases/latest/download/ZyntraLauncher-macOS.dmg"
+ ],
+ "fileSize": "6MB",
+ "image": "https://ghoperfifj-art.github.io/Zyntra-launcher-/img/og.png",
+ "screenshot": [
+  "https://ghoperfifj-art.github.io/Zyntra-launcher-/img/home.webp",
+  "https://ghoperfifj-art.github.io/Zyntra-launcher-/img/mods.webp",
+  "https://ghoperfifj-art.github.io/Zyntra-launcher-/img/fine.webp"
+ ],
+ "sameAs": [
+  "https://github.com/ghoperfifj-art/Zyntra-launcher-"
+ ]
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "FAQPage",
+ "mainEntity": [
+  {
+   "@type": "Question",
+   "name": "Is it free?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Yes, completely. No ads, subscriptions or paid features. The source code is published on GitHub."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Do I need a Minecraft license?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "No, you can play with any nickname using an offline profile. Servers that check licenses will not let such a profile in; regular servers and single player work fine."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Why do Windows or macOS warn me on first launch?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "The launcher has no paid code-signing certificate from Microsoft or Apple, so the system does not know the developer. Allow it once and it opens like any other app afterwards."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Does it pick up my TLauncher versions?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Yes. Zyntra finds the versions and modpacks in the TLauncher folder and launches them with all their mods."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "What is Horizon?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "An unofficial project that rewrote Minecraft Java Edition 26.3 in Rust. It runs noticeably better on weak hardware. Zyntra downloads it for you and adds OptiFine-style settings, zoom and mods."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Does it work on Intel Macs or Linux?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "For now the Mac build is for Apple Silicon only (M1 and newer). Intel Mac and Linux versions are planned."
+   }
+  }
+ ]
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "WebSite",
+ "name": "Zyntra Launcher",
+ "url": "https://ghoperfifj-art.github.io/Zyntra-launcher-/en/",
+ "inLanguage": "en",
+ "publisher": {
+  "@type": "Organization",
+  "name": "Zyntra",
+  "url": "https://ghoperfifj-art.github.io/Zyntra-launcher-/",
+  "logo": "https://ghoperfifj-art.github.io/Zyntra-launcher-/img/logo.png",
+  "sameAs": [
+   "https://github.com/ghoperfifj-art/Zyntra-launcher-"
+  ]
+ }
+}
+</script>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#">
+      <img src="../img/logo.png" width="38" height="38" alt="Zyntra Launcher">
+      <span><b>ZYNTRA</b><small>LAUNCHER</small></span>
+    </a>
+    <nav class="links">
+      <a href="#features">Features</a>
+      <a href="#horizon">Horizon</a>
+      <a href="#download">Download</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <a class="btn small primary" href="#download">Download</a>
+  </div>
+</header>
+
+<main>
+  <div class="wrap hero">
+    <div class="bg-blocks" aria-hidden="true">
+      <img src="../img/block.png" alt="" style="--s:150px;--o:.16;--b:6px;left:4%;top:40px">
+      <img src="../img/block.png" alt="" style="--s:70px;--o:.22;--b:2px;left:16%;top:330px;--d:-5s">
+      <img src="../img/block.png" alt="" style="--s:110px;--o:.14;--b:4px;right:6%;top:90px;--d:-9s">
+      <img src="../img/block.png" alt="" style="--s:54px;--o:.2;--b:1.5px;right:18%;top:400px;--d:-3s">
+      <img src="../img/block.png" alt="" style="--s:190px;--o:.1;--b:9px;right:-2%;top:520px;--d:-7s">
+      <img src="../img/block.png" alt="" style="--s:120px;--o:.1;--b:7px;left:-1%;top:560px;--d:-11s">
+    </div>
+    <span class="badge">Free · no ads · Windows and Mac</span>
+    <h1>The Minecraft launcher <span>that just works</span></h1>
+    <p class="lead">Every Minecraft version, play without a Microsoft account, mods, shaders and skins in one lightweight app written in Rust.</p>
+    <div class="cta" id="cta">
+      <a class="btn primary" data-os="win" href="https://github.com/ghoperfifj-art/Zyntra-launcher-/releases/latest/download/ZyntraSetup-Windows.exe">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.5 10.5 4.4v7.1H3V5.5Zm0 13 7.5 1.1v-7.1H3v6Zm8.4 1.2L21 21V12.5h-9.6v7.2Zm0-15.4v7.2H21V3l-9.6 1.3Z"/></svg>
+        <span>Download for Windows<span class="sub">ZyntraSetup-Windows.exe · 6 MB</span></span>
+      </a>
+      <a class="btn" data-os="mac" href="https://github.com/ghoperfifj-art/Zyntra-launcher-/releases/latest/download/ZyntraLauncher-macOS.dmg">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.8 1.2 1.8 2.6 3.1 2.5 1.3-.1 1.7-.8 3.2-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4 1-1.4 1.4-2.7 1.4-2.8-.1 0-2.7-1-2.7-4.2ZM13.9 4.9c.7-.8 1.2-2 1-3.1-1 0-2.2.7-2.9 1.5-.6.7-1.2 1.9-1 3 1.1.1 2.2-.6 2.9-1.4Z"/></svg>
+        <span>Download for Mac<span class="sub">M1 and newer · .dmg · 6 MB</span></span>
+      </a>
+    </div>
+    <p class="note">Source code on <a href="https://github.com/ghoperfifj-art/Zyntra-launcher-">GitHub</a></p>
+    <img class="shot" src="../img/home.webp" fetchpriority="high" width="1475" height="875" alt="Zyntra Launcher home screen">
+  </div>
+
+  <section id="features">
+    <div class="wrap">
+      <div class="head">
+        <h2>Everything you need, nothing you don’t</h2>
+        <p>No ads, no banners, no pop-ups. Pick a version, press Play.</p>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="m12 2 9 5v10l-9 5-9-5V7l9-5Z"/><path d="m3 7 9 5 9-5M12 12v10"/></svg></div>
+          <h3>Every version</h3>
+          <p>Releases, snapshots, Beta and Alpha, Fabric. Picks up TLauncher versions too — Forge, OptiFine and more.</p>
+        </div>
+        <div class="card">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></div>
+          <h3>No account needed</h3>
+          <p>Play with any nickname — no Microsoft sign-up required.</p>
+        </div>
+        <div class="card">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="7" width="18" height="10" rx="2"/><path d="M7 7V4M12 7V4M17 7V4M7 20v-3M12 20v-3M17 20v-3"/></svg></div>
+          <h3>Memory on autopilot</h3>
+          <p>The launcher checks your RAM and gives the game the right amount. Fine-tune it with a slider.</p>
+        </div>
+        <div class="card">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M8 3h8l1 4h3v4l-3 1v9H7v-9l-3-1V7h3l1-4Z"/></svg></div>
+          <h3>3D skins</h3>
+          <p>Load a PNG and spin the model. Your skin shows up in game in every version.</p>
+        </div>
+        <div class="card">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg></div>
+          <h3>Mods and shaders</h3>
+          <p>The Modrinth catalog built in: search, one-click install, dependencies handled for you.</p>
+        </div>
+        <div class="card">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg></div>
+          <h3>Light and fast</h3>
+          <p>Written in Rust: a 6 MB installer that starts instantly. Hides while you play and comes back when you quit.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="horizon">
+    <div class="wrap">
+      <div class="horizon">
+        <div>
+          <span class="badge">Only in Zyntra</span>
+          <h2>Horizon OptiFine</h2>
+          <p>Horizon is Minecraft 26.3 rewritten in Rust. It starts fast and runs smoothly even on weak PCs. Zyntra adds:</p>
+          <ul>
+            <li>Zyntra Fine — OptiFine-style graphics settings with presets</li>
+            <li>Zoom on a key and dynamic light from the torch in your hand</li>
+            <li>OptiFine/Iris shader packs such as BSL</li>
+            <li>Native mods: Freecam, a minimap and more</li>
+            <li>The Zyntra Crystals mod: a crystal block, shards and a sword</li>
+          </ul>
+          <p style="margin:18px 0 0"><a class="btn small" href="https://github.com/horizon-rust/horizon">About Horizon →</a></p>
+        </div>
+        <img src="../img/fine.webp" width="1477" height="852" alt="Zyntra Fine settings for Horizon" loading="lazy">
+      </div>
+    </div>
+  </section>
+
+  <section id="screens">
+    <div class="wrap">
+      <div class="head">
+        <h2>What it looks like</h2>
+        <p>Dark theme, big buttons, everything on one screen.</p>
+      </div>
+      <div class="gallery">
+        <figure>
+          <img src="../img/mods.webp" width="1477" height="852" alt="Mods section" loading="lazy">
+          <figcaption>Horizon mods and the native-mods build</figcaption>
+        </figure>
+        <figure>
+          <img src="../img/fine.webp" width="1477" height="852" alt="Zyntra Fine" loading="lazy">
+          <figcaption>Zyntra Fine — OptiFine for Horizon</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section id="download">
+    <div class="wrap">
+      <div class="head">
+        <h2>Download Zyntra Launcher</h2>
+        <p>Always the latest version. Installs in half a minute.</p>
+      </div>
+      <div class="dl">
+        <div class="card" data-card="win">
+          <h3><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.5 10.5 4.4v7.1H3V5.5Zm0 13 7.5 1.1v-7.1H3v6Zm8.4 1.2L21 21V12.5h-9.6v7.2Zm0-15.4v7.2H21V3l-9.6 1.3Z"/></svg>Windows <span class="tag">10 and 11</span></h3>
+          <ol>
+            <li>Download the installer.</li>
+            <li>Run it and click Install — no admin rights needed.</li>
+            <li>If you see “Windows protected your PC”, click “More info” → “Run anyway”.</li>
+          </ol>
+          <a class="btn primary" href="https://github.com/ghoperfifj-art/Zyntra-launcher-/releases/latest/download/ZyntraSetup-Windows.exe">Download .exe</a>
+        </div>
+        <div class="card" data-card="mac">
+          <h3><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.8 1.2 1.8 2.6 3.1 2.5 1.3-.1 1.7-.8 3.2-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4 1-1.4 1.4-2.7 1.4-2.8-.1 0-2.7-1-2.7-4.2ZM13.9 4.9c.7-.8 1.2-2 1-3.1-1 0-2.2.7-2.9 1.5-.6.7-1.2 1.9-1 3 1.1.1 2.2-.6 2.9-1.4Z"/></svg>Mac <span class="tag">M1, M2, M3, M4</span></h3>
+          <ol>
+            <li>Download the .dmg and open it.</li>
+            <li>Drag Zyntra Launcher into Applications.</li>
+            <li>First launch: right-click → Open. On macOS 15: System Settings → Privacy &amp; Security → Open Anyway.</li>
+          </ol>
+          <a class="btn primary" href="https://github.com/ghoperfifj-art/Zyntra-launcher-/releases/latest/download/ZyntraLauncher-macOS.dmg">Download .dmg</a>
+        </div>
+      </div>
+      <p class="note" style="text-align:center">All versions and release notes are on the <a href="https://github.com/ghoperfifj-art/Zyntra-launcher-/releases">releases page</a>.</p>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap">
+      <div class="head"><h2>FAQ</h2></div>
+      <div class="faq">
+        <details>
+          <summary>Is it free?</summary>
+          <p>Yes, completely. No ads, subscriptions or paid features. The source code is published on GitHub.</p>
+        </details>
+        <details>
+          <summary>Do I need a Minecraft license?</summary>
+          <p>No, you can play with any nickname using an offline profile. Servers that check licenses will not let such a profile in; regular servers and single player work fine.</p>
+        </details>
+        <details>
+          <summary>Why do Windows or macOS warn me on first launch?</summary>
+          <p>The launcher has no paid code-signing certificate from Microsoft or Apple, so the system does not know the developer. Allow it once and it opens like any other app afterwards.</p>
+        </details>
+        <details>
+          <summary>Does it pick up my TLauncher versions?</summary>
+          <p>Yes. Zyntra finds the versions and modpacks in the TLauncher folder and launches them with all their mods.</p>
+        </details>
+        <details>
+          <summary>What is Horizon?</summary>
+          <p>An unofficial project that rewrote Minecraft Java Edition 26.3 in Rust. It runs noticeably better on weak hardware. Zyntra downloads it for you and adds OptiFine-style settings, zoom and mods.</p>
+        </details>
+        <details>
+          <summary>Does it work on Intel Macs or Linux?</summary>
+          <p>For now the Mac build is for Apple Silicon only (M1 and newer). Intel Mac and Linux versions are planned.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div>
+      <b style="color:var(--text)">Zyntra Launcher</b> · <a href="https://github.com/ghoperfifj-art/Zyntra-launcher-">GitHub</a><br>
+      Unofficial project, not affiliated with Mojang Studios or Microsoft.<br>Minecraft is a trademark of Mojang and Microsoft.<br>
+      <span class="lang">Language: <a href="../" hreflang="ru">Русский</a> · <b>English</b></span>
+    </div>
+    <a class="btn small" href="#">Back to top ↑</a>
+  </div>
+</footer>
+
+<script>
+// Put the visitor's own system first: Mac users get the .dmg as the main button.
+(function () {
+  var mac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+  if (!mac) return;
+  var cta = document.getElementById('cta');
+  var win = cta.querySelector('[data-os="win"]'), m = cta.querySelector('[data-os="mac"]');
+  win.classList.remove('primary'); m.classList.add('primary');
+  cta.insertBefore(m, win);
+  var cards = document.querySelector('.dl');
+  cards.insertBefore(cards.querySelector('[data-card="mac"]'), cards.firstChild);
+})();
+// The highlighted download card: the visitor's own system at first, then whichever card is
+// pointed at; a click (or tap) makes it the chosen one the highlight returns to.
+(function () {
+  var grid = document.querySelector('.dl');
+  var cards = grid.querySelectorAll('[data-card]');
+  var chosen = /Mac/.test(navigator.platform || navigator.userAgent) ? 'mac' : 'win';
+  function mark(os) {
+    cards.forEach(function (c) { c.classList.toggle('current', c.dataset.card === os); });
+  }
+  cards.forEach(function (c) {
+    c.addEventListener('mouseenter', function () { mark(c.dataset.card); });
+    c.addEventListener('focusin', function () { mark(c.dataset.card); });
+    c.addEventListener('click', function () { chosen = c.dataset.card; mark(chosen); });
+  });
+  grid.addEventListener('mouseleave', function () { mark(chosen); });
+  mark(chosen);
+})();
+</script>
+</body>
+</html>

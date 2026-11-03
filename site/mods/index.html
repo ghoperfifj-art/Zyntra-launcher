@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Как установить моды на Minecraft в один клик — Zyntra Launcher</title>
+<meta name="description" content="Установка модов Minecraft через Zyntra Launcher: поиск по каталогу Modrinth, Fabric, Forge и NeoForge, автоматические зависимости, своя папка модов для каждой версии.">
+<link rel="canonical" href="https://ghoperfifj-art.github.io/Zyntra-launcher-/mods/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Zyntra Launcher">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:url" content="https://ghoperfifj-art.github.io/Zyntra-launcher-/mods/">
+<meta property="og:title" content="Как установить моды на Minecraft в один клик — Zyntra Launcher">
+<meta property="og:description" content="Установка модов Minecraft через Zyntra Launcher: поиск по каталогу Modrinth, Fabric, Forge и NeoForge, автоматические зависимости, своя папка модов для каждой версии.">
+<meta property="og:image" content="https://ghoperfifj-art.github.io/Zyntra-launcher-/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="article:modified_time" content="2026-11-03">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ghoperfifj-art.github.io/Zyntra-launcher-/img/og.png">
+<meta name="theme-color" content="#0d0a14">
+<link rel="icon" type="image/png" href="../img/favicon.png">
+<link rel="preload" href="../fonts/inter-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../fonts/unbounded-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../style.css">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "HowTo",
+ "headline": "Как установить моды на Minecraft в один клик",
+ "description": "Установка модов Minecraft через Zyntra Launcher: поиск по каталогу Modrinth, Fabric, Forge и NeoForge, автоматические зависимости, своя папка модов для каждой версии.",
+ "url": "https://ghoperfifj-art.github.io/Zyntra-launcher-/mods/",
+ "inLanguage": "ru",
+ "dateModified": "2026-11-03",
+ "datePublished": "2026-11-03",
+ "image": "https://ghoperfifj-art.github.io/Zyntra-launcher-/img/og.png",
+ "author": {
+  "@type": "Organization",
+  "name": "Zyntra",
+  "url": "https://ghoperfifj-art.github.io/Zyntra-launcher-/"
+ },
+ "publisher": {
+  "@type": "Organization",
+  "name": "Zyntra",
+  "url": "https://ghoperfifj-art.github.io/Zyntra-launcher-/",
+  "logo": {
+   "@type": "ImageObject",
+   "url": "https://ghoperfifj-art.github.io/Zyntra-launcher-/img/logo.png"
+  }
+ },
+ "mainEntityOfPage": "https://ghoperfifj-art.github.io/Zyntra-launcher-/mods/"
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "BreadcrumbList",
+ "itemListElement": [
+  {
+   "@type": "ListItem",
+   "position": 1,
+   "name": "Zyntra Launcher",
+   "item": "https://ghoperfifj-art.github.io/Zyntra-launcher-/"
+  },
+  {
+   "@type": "ListItem",
+   "position": 2,
+   "name": "Моды",
+   "item": "https://ghoperfifj-art.github.io/Zyntra-launcher-/mods/"
+  }
+ ]
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "FAQPage",
+ "mainEntity": [
+  {
+   "@type": "Question",
+   "name": "Мод не появился в игре — что делать?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Проверьте, что запускаете ту же версию, для которой ставили мод, и что загрузчик совпадает: мод для Fabric не работает в Forge и наоборот."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Игра вылетает после установки мода",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Откройте «Консоль» в лаунчере или кнопку «Логи игры» — там видно, какой мод вызвал ошибку. Удалите его файл из папки mods. Частая причина — мод для другой версии игры."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Можно ли ставить моды с CurseForge?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Встроенный каталог — Modrinth. Файлы .jar с CurseForge можно скачать вручную и положить в папку mods нужной версии."
+   }
+  }
+ ]
+}
+</script>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="../">
+      <img src="../img/logo.png" width="38" height="38" alt="Zyntra Launcher">
+      <span><b>ZYNTRA</b><small>LAUNCHER</small></span>
+    </a>
+    <nav class="links">
+      <a href="../guides/">Гайды</a>
+      <a href="../tlauncher-alternative/">Сравнение</a>
+      <a href="../mac/">Mac</a>
+      <a href="../horizon/">Horizon</a>
+    </nav>
+    <a class="btn small primary" href="../#download">Скачать</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <nav class="crumbs" aria-label="Навигация"><a href="../">Главная</a><span>›</span>Моды</nav>
+  <div class="page-head">
+    <h1>Как установить моды на Minecraft в один клик</h1>
+    <p class="lead">В Zyntra Launcher моды ставятся прямо из лаунчера: найдите мод в каталоге Modrinth, выберите версию игры и нажмите «Установить» — нужные библиотеки скачаются сами.</p>
+    <time class="updated" datetime="2026-11-03">Обновлено 3 ноября 2026</time>
+  </div>
+  <article class="article">
+<h2>Как поставить мод</h2>
+<ol>
+  <li>Откройте раздел <strong>«Моды»</strong> в левом меню лаунчера.</li>
+  <li>Выберите загрузчик сверху: <strong>Fabric</strong>, <strong>Forge</strong>, <strong>NeoForge</strong> или «Все».</li>
+  <li>Найдите мод через поиск — например «Sodium», «JEI» или «Create».</li>
+  <li>Справа выберите версию игры, для которой нужен мод.</li>
+  <li>Нажмите <strong>«Установить»</strong>. Обязательные зависимости (например Fabric API) поставятся автоматически.</li>
+  <li>Запустите эту версию на главном экране — мод уже будет в игре.</li>
+</ol>
+
+<h2>Нужно ли отдельно ставить Fabric или Forge?</h2>
+<div class="answer">
+  <p><strong>Fabric</strong> лаунчер ставит сам: выберите во вкладке «Fabric» на главном экране нужную версию игры. <strong>Forge и NeoForge</strong> Zyntra пока сам не устанавливает, но запускает версии с ними, если они уже установлены через TLauncher, — они видны в списке «Мои версии» с пометкой «из TLauncher».</p>
+</div>
+
+<h2>Куда ставятся моды?</h2>
+<p>У каждой версии с модами своя папка, чтобы моды для разных версий не смешивались:</p>
+<ul>
+  <li>версии Fabric, установленные Zyntra, — <code>minecraft/profiles/fabric-&lt;версия&gt;/mods</code>;</li>
+  <li>версии из TLauncher — их обычная папка <code>mods</code> в каталоге TLauncher.</li>
+</ul>
+<p>Открыть папку игры можно кнопкой с папкой в правом верхнем углу лаунчера или пунктом «Папка игры» в меню. Скачанные вручную файлы <code>.jar</code> тоже можно положить в папку <code>mods</code> — они подхватятся.</p>
+
+<h2>Какие моды поставить для FPS?</h2>
+<div class="answer">
+  <p>Для Fabric: <strong>Sodium</strong> (быстрая отрисовка), <strong>Lithium</strong> (оптимизация логики игры) и <strong>FerriteCore</strong> (меньше расход памяти). Все три есть в каталоге и ставятся одной кнопкой каждый.</p>
+</div>
+
+<h2>Моды для Horizon</h2>
+<p>У Horizon свои моды — Java-моды Forge и Fabric в нём не работают. Во вкладке <strong>«Horizon»</strong> раздела «Моды» есть:</p>
+<ul>
+  <li><strong>контентные моды</strong> — новые блоки и предметы, ставятся сразу (например Zyntra Crystals);</li>
+  <li><strong>нативные моды</strong> — Freecam, мини-карта и другие. Они встраиваются в код игры: лаунчер собирает версию Horizon с ними из исходников. Для этого нужен установленный <a href="https://rustup.rs">Rust</a>, а первая сборка занимает до получаса.</li>
+</ul>
+<p><a href="../horizon/">Подробнее о Horizon</a></p>
+
+<details>
+  <summary>Мод не появился в игре — что делать?</summary>
+  <p>Проверьте, что запускаете ту же версию, для которой ставили мод, и что загрузчик совпадает: мод для Fabric не работает в Forge и наоборот.</p>
+</details>
+<details>
+  <summary>Игра вылетает после установки мода</summary>
+  <p>Откройте «Консоль» в лаунчере или кнопку «Логи игры» — там видно, какой мод вызвал ошибку. Удалите его файл из папки mods. Частая причина — мод для другой версии игры.</p>
+</details>
+<details>
+  <summary>Можно ли ставить моды с CurseForge?</summary>
+  <p>Встроенный каталог — Modrinth. Файлы .jar с CurseForge можно скачать вручную и положить в папку mods нужной версии.</p>
+</details>
+  </article>
+  <section class="related"><h2>Читайте также</h2><div class="cards"><a class="card" href="../shaders/"><h3>Шейдеры</h3><p>Установка шейдеров Minecraft через Zyntra Launcher: каталог Modrinth, шейдеры для Horizon OptiFine без отдельного мода и для Java-версий через Iris или OptiFine.</p></a><a class="card" href="../horizon/"><h3>Horizon 26.3</h3><p>Что такое Horizon: Minecraft Java Edition 26.3, переписанный на Rust. Как играть в Horizon через Zyntra Launcher и что даёт версия Horizon OptiFine: настройки графики, зум, шейдеры, моды.</p></a><a class="card" href="../guides/pamyat/"><h3>Память для Minecraft</h3><p>Сколько ОЗУ выделять Minecraft без модов и со сборками, как Zyntra Launcher подбирает память автоматически и что делать, если игре не хватает памяти.</p></a><a class="card" href="../tlauncher-alternative/"><h3>Альтернатива TLauncher</h3><p>Сравнение Zyntra Launcher, TLauncher, официального лаунчера Minecraft и Prism Launcher: реклама, вход без аккаунта Microsoft, моды, Mac M1, исходный код.</p></a></div></section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div>
+      <b style="color:var(--text)">Zyntra Launcher</b> · <a href="https://github.com/ghoperfifj-art/Zyntra-launcher-">GitHub</a><br>
+      Неофициальный проект, не связан с Mojang Studios и Microsoft.<br>Minecraft — торговая марка Mojang и Microsoft.
+    </div>
+    <nav class="foot-links" aria-label="Разделы сайта">
+        <a href="../tlauncher-alternative/">Альтернатива TLauncher</a>
+        <a href="../mac/">Minecraft на Mac M1–M4</a>
+        <a href="../horizon/">Horizon 26.3</a>
+        <a href="../mods/">Как ставить моды</a>
+        <a href="../shaders/">Как ставить шейдеры</a>
+        <a href="../guides/">Все гайды</a>
+        <a href="../changelog/">Что нового</a>
+        <a href="../en/">English</a>
+    </nav>
+  </div>
+</footer>
+</body>
+</html>
