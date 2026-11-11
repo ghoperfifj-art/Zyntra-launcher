@@ -5,7 +5,7 @@
 Zyntra Launcher is a free, open-source (MIT) Minecraft launcher written in Rust for Windows and Apple Silicon Macs: every Minecraft version, offline profile, one-click Modrinth mods and shaders, 3D skins and Horizon (Minecraft 26.3 rewritten in Rust). No ads.
 
 Ключевые факты:
-- Последняя версия: 0.1.1 (2026-11-03)
+- Последняя версия: 0.1.2 (2026-11-11)
 - Цена: бесплатно, без рекламы и платных функций
 - Системы: Windows 10 и 11 (x64); macOS 11+ на Apple Silicon (M1, M2, M3, M4)
 - Размер установщика: около 6 МБ

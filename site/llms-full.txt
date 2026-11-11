@@ -1,6 +1,6 @@
 # Zyntra Launcher — полный текст сайта
 
-Источник: https://ghoperfifj-art.github.io/Zyntra-launcher-/ · версия 0.1.1 · 2026-11-03
+Источник: https://ghoperfifj-art.github.io/Zyntra-launcher-/ · версия 0.1.2 · 2026-11-11
 
 
 # Главная (https://ghoperfifj-art.github.io/Zyntra-launcher-/)
@@ -16,7 +16,7 @@
 Скачать для Mac — M1 и новее · .dmg · 6 МБ
 (https://github.com/ghoperfifj-art/Zyntra-launcher-/releases/latest/download/ZyntraLauncher-macOS.dmg)
 
-Версия 0.1.1 · 3 ноября 2026 · Открытый исходный код (MIT) на GitHub (https://github.com/ghoperfifj-art/Zyntra-launcher-)
+Версия 0.1.2 · 11 ноября 2026 · Открытый исходный код (MIT) на GitHub (https://github.com/ghoperfifj-art/Zyntra-launcher-)
 
 ## Всё нужное — ничего лишнего
 
@@ -123,9 +123,13 @@ Mac M1, M2, M3, M4
 
 # Что нового в Zyntra Launcher (https://ghoperfifj-art.github.io/Zyntra-launcher-/changelog/)
 
-Обновлено: 2026-11-03
+Обновлено: 2026-11-11
 
 Все версии Zyntra Launcher, от новых к старым. Скачать последнюю можно на главной странице, все сборки — на GitHub (https://github.com/ghoperfifj-art/Zyntra-launcher-/releases).
+
+## 0.1.2 — 11 ноября 2026
+
+- Друзья, сервер для друзей и Horizon: добавление по одному коду, стабильный туннель, миры и исправления.
 
 ## 0.1.1 — 3 ноября 2026
 
