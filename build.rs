@@ -87,6 +87,12 @@ fn write_ico(path: &Path, images: &[RgbaImage]) {
         .iter()
         .map(|img| {
             let size = img.width();
+            // Windows 10 reads the largest size best as PNG (the standard form since Vista).
+            if size >= 256 {
+                let mut png = std::io::Cursor::new(Vec::new());
+                img.write_to(&mut png, image::ImageFormat::Png).expect("icon png");
+                return png.into_inner();
+            }
             let mask_row = size.div_ceil(32) * 4;
             let mut bmp = Vec::new();
             for v in [40u32, size, size * 2] {
@@ -103,7 +109,17 @@ fn write_ico(path: &Path, images: &[RgbaImage]) {
                     bmp.extend_from_slice(&[b, g, r, a]);
                 }
             }
-            bmp.extend(std::iter::repeat_n(0u8, (mask_row * size) as usize));
+            // AND mask: 1 = see-through. Whatever ignores the alpha channel uses this, and an
+            // empty mask turns the rounded corners into a solid square.
+            for y in (0..size).rev() {
+                let mut row = vec![0u8; mask_row as usize];
+                for x in 0..size {
+                    if img.get_pixel(x, y).0[3] < 128 {
+                        row[(x / 8) as usize] |= 0x80 >> (x % 8);
+                    }
+                }
+                bmp.extend_from_slice(&row);
+            }
             bmp
         })
         .collect();

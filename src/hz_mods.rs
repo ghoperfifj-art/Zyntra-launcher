@@ -6,7 +6,7 @@ use crate::task::Task;
 use anyhow::{bail, Context, Result};
 use serde::Deserialize;
 use sha2::{Digest, Sha256};
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
 use std::fs;
 use std::io::Read;
 use std::path::{Path, PathBuf};
@@ -245,6 +245,155 @@ pub fn remove(item: &Installed) -> Result<()> {
         fs::remove_dir_all(&item.path)?;
     } else {
         fs::remove_file(&item.path)?;
+    }
+    Ok(())
+}
+
+/// Connected glass for Horizon OptiFine, as in OptiFine: the frame between neighbouring glass
+/// blocks disappears. The pack holds OptiFine CTM rules (`ctm_compact`) with tiles cut from
+/// the game's own glass textures on this computer, so no Mojang texture ships with Zyntra.
+pub const GLASS_FILE: &str = "ZyntraGlass.zip";
+/// Raised when the tiles change, so an old pack is made again.
+const GLASS_VERSION: &str = "4";
+const GLASS_COLORS: [&str; 16] = [
+    "white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray", "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black",
+];
+
+/// Connected glass for Horizon OptiFine as a resource pack (Horizon reads `optifine/ctm`
+/// rules only from packs), switched off for plain Horizon. `resources` is the folder holding
+/// `assets/`: files an earlier launcher version put straight in there are taken out again.
+pub fn apply_own_packs(game: &Path, resources: &Path, glass: bool) -> Result<()> {
+    restore_own_packs(resources)?;
+    fs::remove_file(game.join(".zyntra-glass.zip")).ok();
+    fs::remove_file(game.join(".zyntra-glass.version")).ok();
+    let options = game.join("options.txt");
+    let entry = format!("file/{GLASS_FILE}");
+    if !glass {
+        return disable_pack(&options, &entry);
+    }
+    let dir = game.join("resourcepacks");
+    let pack = dir.join(GLASS_FILE);
+    let stamp = dir.join("ZyntraGlass.version");
+    if !pack.exists() || fs::read_to_string(&stamp).ok().as_deref() != Some(GLASS_VERSION) {
+        fs::create_dir_all(&dir)?;
+        fs::write(&pack, glass_pack(&resources.join("assets/minecraft/textures/block"))?)?;
+        fs::write(&stamp, GLASS_VERSION)?;
+    }
+    crate::skin::enable_pack(&options, &entry)
+}
+
+const OWN_RECORD: &str = "zyntra-own-packs.json";
+
+fn orig_path(path: &Path) -> PathBuf {
+    let mut name = path.file_name().unwrap_or_default().to_os_string();
+    name.push(".zyntra-orig");
+    path.with_file_name(name)
+}
+
+/// Takes out what the last launch put in and brings back the files it replaced.
+fn restore_own_packs(resources: &Path) -> Result<()> {
+    let path = resources.join(OWN_RECORD);
+    let Ok(text) = fs::read_to_string(&path) else { return Ok(()) };
+    let record: Vec<(String, bool)> = serde_json::from_str(&text).unwrap_or_default();
+    for (name, had) in record {
+        let target = resources.join(&name);
+        fs::remove_file(&target).ok();
+        if had {
+            fs::rename(orig_path(&target), &target)?;
+        }
+    }
+    fs::remove_file(path)?;
+    Ok(())
+}
+
+fn glass_pack(blocks: &Path) -> Result<Vec<u8>> {
+    use std::io::Write;
+    use zip::write::SimpleFileOptions;
+    let mut out = zip::ZipWriter::new(std::io::Cursor::new(Vec::new()));
+    let opts = SimpleFileOptions::default();
+    out.start_file("pack.mcmeta", opts)?;
+    out.write_all(br#"{"pack":{"description":"Zyntra: connected glass","pack_format":15,"supported_formats":[15,999],"min_format":15,"max_format":999}}"#)?;
+    let mut kinds = vec![("glass".to_owned(), "glass_pane".to_owned())];
+    kinds.extend(GLASS_COLORS.iter().map(|c| (format!("{c}_stained_glass"), format!("{c}_stained_glass_pane"))));
+    let mut made = 0;
+    for (block, pane) in kinds {
+        let Ok(texture) = image::open(blocks.join(format!("{block}.png"))) else { continue };
+        let texture = texture.to_rgba8();
+        let folder = format!("assets/minecraft/optifine/ctm/{block}");
+        for (i, tile) in glass_tiles(&texture).iter().enumerate() {
+            let mut png = std::io::Cursor::new(Vec::new());
+            tile.write_to(&mut png, image::ImageFormat::Png)?;
+            out.start_file(format!("{folder}/{i}.png"), opts)?;
+            out.write_all(png.get_ref())?;
+        }
+        out.start_file(format!("{folder}/{block}.properties"), opts)?;
+        write!(out, "matchBlocks={block} {pane}\nmethod=ctm_compact\ntiles=0-4\nconnect=block\n")?;
+        made += 1;
+    }
+    if made == 0 {
+        bail!("не найдены текстуры стекла в {}", blocks.display());
+    }
+    Ok(out.finish()?.into_inner())
+}
+
+/// The five `ctm_compact` tiles, in Horizon's order (each face is drawn from their quarters):
+/// every border, none, left and right borders (joined above and below), top and bottom
+/// borders (joined left and right), only the corner dots.
+fn glass_tiles(texture: &image::RgbaImage) -> [image::RgbaImage; 5] {
+    let (w, h) = texture.dimensions();
+    // The frame is one texel of a 16 px texture; wider for larger packs.
+    let edge = (w / 16).max(1);
+    // A removed frame takes the glass's own fill: the commonest colour inside it, see-through
+    // for clear glass, the tint for stained glass (a clear seam would show through otherwise).
+    let mut counts: HashMap<[u8; 4], u32> = HashMap::new();
+    for (x, y, px) in texture.enumerate_pixels() {
+        if x >= edge && x < w - edge && y >= edge && y < h - edge {
+            *counts.entry(px.0).or_default() += 1;
+        }
+    }
+    let fill = image::Rgba(counts.into_iter().max_by_key(|(_, n)| *n).map_or([0; 4], |(c, _)| c));
+    let clear = |keep: &dyn Fn(u32, u32) -> bool| {
+        let mut tile = texture.clone();
+        for (x, y, px) in tile.enumerate_pixels_mut() {
+            let (left, right, top, bottom) = (x < edge, x >= w - edge, y < edge, y >= h - edge);
+            if (left || right || top || bottom) && !keep(x, y) {
+                *px = fill;
+            }
+        }
+        tile
+    };
+    let side_x = |x: u32| x < edge || x >= w - edge;
+    let side_y = |y: u32| y < edge || y >= h - edge;
+    [
+        texture.clone(),
+        clear(&|_, _| false),
+        // Joined above and below: the left and right lines stay.
+        clear(&|x, _| side_x(x)),
+        // Joined left and right: the top and bottom lines stay.
+        clear(&|_, y| side_y(y)),
+        // All four neighbours: only the corner dots stay.
+        clear(&|x, y| side_x(x) && side_y(y)),
+    ]
+}
+
+/// Takes a pack out of `resourcePacks` in options.txt.
+fn disable_pack(options: &Path, entry: &str) -> Result<()> {
+    let Ok(text) = fs::read_to_string(options) else { return Ok(()) };
+    let prefix = "resourcePacks:";
+    let mut changed = false;
+    let lines: Vec<String> = text
+        .lines()
+        .map(|line| match line.strip_prefix(prefix).and_then(|l| serde_json::from_str::<Vec<String>>(l).ok()) {
+            Some(mut list) if list.iter().any(|e| e == entry) => {
+                list.retain(|e| e != entry);
+                changed = true;
+                format!("{prefix}{}", serde_json::to_string(&list).unwrap_or_default())
+            }
+            _ => line.to_owned(),
+        })
+        .collect();
+    if changed {
+        fs::write(options, lines.join("\n") + "\n")?;
     }
     Ok(())
 }

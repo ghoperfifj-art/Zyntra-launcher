@@ -16,3 +16,7 @@ zlauncher.json
 
 # Other people's mods dropped into the folder
 *.jar
+
+# Personal notes, never in the public repo
+COWORK.md
+SEO-GEO-plan.md

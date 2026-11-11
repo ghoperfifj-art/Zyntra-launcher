@@ -4,7 +4,7 @@ use crate::config::{loader_of, Config, Fine, Target};
 use crate::minecraft::{self, Dirs, LaunchOptions, Manifest};
 use crate::task::Task;
 use crate::ui::*;
-use crate::{fabric, horizon, hz_mods, mods, native, net, skin, system, viewer};
+use crate::{fabric, friends, horizon, hz_mods, mods, native, net, skin, system, viewer};
 use anyhow::Result;
 use eframe::egui::{self, vec2, Align, Align2, Color32, CursorIcon, Layout, Pos2, Rect, Sense, Stroke, StrokeKind, Ui, UiBuilder};
 use std::collections::{HashMap, HashSet, VecDeque};
@@ -33,6 +33,7 @@ enum Page {
     Mods,
     Shaders,
     Fine,
+    Friends,
     Console,
     Settings,
 }
@@ -117,7 +118,11 @@ pub struct App {
     logo: egui::TextureHandle,
     /// Block picture shown next to every version (assets/version_block.png).
     version_icon: egui::TextureHandle,
+    /// VPN banner under the friends list (assets/vpn_banner.png).
+    vpn_banner: egui::TextureHandle,
     total_ram: u32,
+    /// Windows' Redirection Guard is on for this launcher (see `system::redirection_guard`).
+    redirection_guard: bool,
     skin_tex: egui::TextureHandle,
     /// Skin path the texture was loaded from, to notice changes.
     skin_loaded: Option<PathBuf>,
@@ -133,6 +138,15 @@ pub struct App {
     mod_icons: HashMap<String, egui::TextureHandle>,
     /// Selected entry in the Horizon tab of the mods page.
     mod_hz_selected: Option<String>,
+    hub: Arc<friends::Hub>,
+    friend_input: String,
+    friend_error: Option<String>,
+    friend_selected: Option<String>,
+    /// Friends' faces by their hex (the skin's face changes rarely).
+    faces: HashMap<String, egui::TextureHandle>,
+    friend_sync: Option<Instant>,
+    /// Worlds that can be opened for friends.
+    server_worlds: Vec<friends::WorldEntry>,
     shaders_state: Arc<Mutex<ShaderState>>,
     shader_query: String,
     /// When the search text last changed (searched after a short pause).
@@ -145,6 +159,11 @@ pub struct App {
 
 fn version_icon_image() -> egui::ColorImage {
     let img = image::load_from_memory(include_bytes!("../assets/version_block.png")).expect("version_block.png").to_rgba8();
+    skin::to_color_image(&img)
+}
+
+fn vpn_banner_image() -> egui::ColorImage {
+    let img = image::load_from_memory(include_bytes!("../assets/vpn_banner.png")).expect("vpn_banner.png").to_rgba8();
     skin::to_color_image(&img)
 }
 
@@ -170,7 +189,12 @@ fn kind_ru(kind: &str) -> &'static str {
 impl App {
     pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
         setup(&cc.egui_ctx);
-        let cfg = Config::load();
+        let mut cfg = Config::load();
+        if cfg.friend_code.is_empty() {
+            cfg.friend_code = friends::new_code();
+        }
+        let hub = friends::Hub::new(cfg.friend_code.clone(), cfg.friends.iter().map(|f| f.code.clone()).collect());
+        hub.clone().run(cc.egui_ctx.clone());
         let horizon_first = cfg.target.as_ref().is_some_and(|t| t.is_horizon());
         let mut app = Self {
             saved: cfg.clone(),
@@ -187,9 +211,11 @@ impl App {
             horizon_local: None,
             was_running: false,
             total_ram: system::total_ram_mb(),
+            redirection_guard: system::redirection_guard(),
             skin_tex: cc.egui_ctx.load_texture("skin", skin::to_color_image(&skin::default_skin()), egui::TextureOptions::NEAREST),
             skin_loaded: None,
             version_icon: cc.egui_ctx.load_texture("version_block", version_icon_image(), egui::TextureOptions::LINEAR),
+            vpn_banner: cc.egui_ctx.load_texture("vpn_banner", vpn_banner_image(), egui::TextureOptions::LINEAR),
             skin_error: None,
             viewer: viewer::ViewerState::default(),
             mods_state: Arc::default(),
@@ -207,6 +233,13 @@ impl App {
             shader_searched_once: false,
             shader_selected: None,
             shader_for_horizon: true,
+            hub,
+            friend_input: String::new(),
+            friend_error: None,
+            friend_selected: None,
+            faces: HashMap::new(),
+            friend_sync: None,
+            server_worlds: Vec::new(),
             logo: cc.egui_ctx.load_texture(
                 "logo",
                 egui::ColorImage::from_rgba_unmultiplied([crate::LOGO_MARK_SIZE as usize; 2], crate::LOGO_MARK),
@@ -214,6 +247,13 @@ impl App {
             ),
         };
         app.refresh_installed();
+        // Worlds made on the friends' server show up in single-player too.
+        {
+            let target = app.cfg.target.clone().unwrap_or(Target::Horizon);
+            let saves = if target.is_horizon() { horizon::game_folder(&app.cfg.game_dir) } else { app.cfg.game_dir_for(&target) }.join("saves");
+            let server = friends::server_folder(&app.cfg.game_dir, server_version(&target).as_deref());
+            std::thread::spawn(move || friends::give_back_all(&server, &saves));
+        }
         app.reload_skin();
         app.fetch_remote(&cc.egui_ctx);
         app
@@ -347,6 +387,8 @@ impl App {
             return;
         }
         let ctx = ctx.clone();
+        let hub = self.hub.clone();
+        let hub_after = hub.clone();
         std::thread::spawn(move || {
             match job(&task) {
                 Ok(Some(mut child)) => {
@@ -357,7 +399,9 @@ impl App {
                     } else if hide_on_launch {
                         crate::window::hide();
                     }
+                    hub.me.lock().unwrap().playing = true;
                     let status = child.wait();
+                    hub.me.lock().unwrap().playing = false;
                     if hide_on_launch && !close_on_launch {
                         crate::window::show();
                     }
@@ -369,6 +413,11 @@ impl App {
                 }
                 Ok(None) => task.finish("Готово"),
                 Err(e) => task.fail(format!("{e:#}")),
+            }
+            {
+                let mut me = hub_after.me.lock().unwrap();
+                me.visiting = None;
+                me.visiting_address = None;
             }
             ctx.request_repaint();
         });
@@ -404,7 +453,7 @@ impl App {
         text(&p, logo.right_center() + vec2(12.0, -8.0), Align2::LEFT_CENTER, "ZYNTRA", bold(22.0), TEXT);
         text(&p, logo.right_center() + vec2(13.0, 13.0), Align2::LEFT_CENTER, "L A U N C H E R", font(10.5), ACCENT);
 
-        let items = [(Page::Home, "🏠", "Главная"), (Page::Versions, "📦", "Версии"), (Page::Skins, "👤", "Скины"), (Page::Mods, "cube", "Моды"), (Page::Shaders, "star", "Шейдеры"), (Page::Fine, "sliders", "Zyntra Fine"), (Page::Console, "🖥", "Консоль")];
+        let items = [(Page::Home, "🏠", "Главная"), (Page::Versions, "📦", "Версии"), (Page::Skins, "👤", "Скины"), (Page::Mods, "cube", "Моды"), (Page::Shaders, "star", "Шейдеры"), (Page::Fine, "sliders", "Zyntra Fine"), (Page::Friends, "👥", "Друзья"), (Page::Console, "🖥", "Консоль")];
         let mut y = rect.top() + 100.0;
         for (page, icon, label) in items {
             let r = Rect::from_min_size(Pos2::new(rect.left() + 14.0, y), vec2(rect.width() - 28.0, 46.0));
@@ -453,7 +502,11 @@ impl App {
         let nick = if self.cfg.nickname.is_empty() { "игрок" } else { &self.cfg.nickname };
         let r1 = text(&p, rect.left_top() + vec2(2.0, 2.0), Align2::LEFT_TOP, "Добро пожаловать, ", bold(28.0), TEXT);
         text(&p, r1.right_top(), Align2::LEFT_TOP, nick, bold(28.0), ACCENT);
-        text(&p, Pos2::new(rect.left() + 2.0, r1.bottom() + 4.0), Align2::LEFT_TOP, "Все версии Minecraft и запуск в один клик — без рекламы", font(13.5), MUTED);
+        if self.redirection_guard {
+            text_fit(&p, Pos2::new(rect.left() + 2.0, r1.bottom() + 4.0), Align2::LEFT_TOP, "Horizon может не запуститься: закрой лаунчер и открой его ярлыком на рабочем столе или из «Пуска»", font(13.5), RED, rect.width() - 420.0);
+        } else {
+            text(&p, Pos2::new(rect.left() + 2.0, r1.bottom() + 4.0), Align2::LEFT_TOP, "Все версии Minecraft и запуск в один клик — без рекламы", font(13.5), MUTED);
+        }
 
         // Profile block
         // Profile block: the skin's face as a pixel avatar (click → skins page)
@@ -696,7 +749,8 @@ impl App {
         let p = ui.painter().clone();
         card(&p, rect);
         let left = Rect::from_min_size(rect.min + vec2(22.0, 20.0), vec2((rect.width() * 0.32).max(280.0), rect.height() - 40.0));
-        let chart = Rect::from_min_max(Pos2::new(left.right() + 30.0, rect.top() + 20.0), rect.max - vec2(20.0, 16.0));
+        let strip = Rect::from_min_size(Pos2::new(left.right() + 30.0, rect.top() + 20.0), vec2(250.0, rect.height() - 36.0));
+        let chart = Rect::from_min_max(Pos2::new(strip.right() + 26.0, rect.top() + 20.0), rect.max - vec2(20.0, 16.0));
 
         text(&p, left.left_top(), Align2::LEFT_TOP, "Запуск игры", bold(18.0), TEXT);
         let running = self.task.running();
@@ -738,7 +792,7 @@ impl App {
         text(&p, chart.left_top(), Align2::LEFT_TOP, "Скорость загрузки", bold(18.0), TEXT);
         let now = self.speed.back().copied().unwrap_or_default();
         text(&p, chart.left_top() + vec2(0.0, 30.0), Align2::LEFT_TOP, format!("{now:.1} МБ/с"), bold(15.0), ACCENT);
-        let btns = Rect::from_min_size(Pos2::new(chart.right() - 260.0, chart.top() - 4.0), vec2(260.0, 34.0));
+        let btns = Rect::from_min_size(Pos2::new(chart.right() - 260.0, chart.top() + 26.0), vec2(260.0, 34.0));
         let mut b = child_ui(ui, btns, "chart_btns", Layout::right_to_left(Align::Center));
         b.spacing_mut().item_spacing.x = 8.0;
         if pill(&mut b, "Консоль", false).clicked() {
@@ -749,6 +803,445 @@ impl App {
         }
         let values: Vec<f32> = self.speed.iter().copied().collect();
         area_chart(ui, Rect::from_min_max(chart.left_top() + vec2(0.0, 60.0), chart.max), &values, "МБ/с");
+        p.vline(strip.right() + 13.0, strip.y_range(), Stroke::new(1.0_f32, BORDER));
+        self.friends_strip(ctx, ui, strip);
+    }
+
+    /// Nickname, version, mods and face for friends. Reads files, so a few times a minute.
+    fn sync_presence(&mut self) {
+        if self.friend_sync.is_some_and(|t| t.elapsed() < Duration::from_secs(15)) {
+            return;
+        }
+        self.friend_sync = Some(Instant::now());
+        let installed = hz_mods::installed(&horizon::game_folder(&self.cfg.game_dir));
+        let skin = self.cfg.skin_path.as_deref().and_then(|p| skin::load(p).ok()).unwrap_or_else(skin::default_skin);
+        let target = self.cfg.target.as_ref();
+        let mut me = self.hub.me.lock().unwrap();
+        me.name = self.cfg.nickname.clone();
+        me.game = target.map(Target::title).unwrap_or_default();
+        me.horizon = target.is_some_and(Target::is_horizon);
+        me.fine = target == Some(&Target::HorizonFine);
+        me.mods = installed.iter().filter(|i| i.enabled == Some(true)).map(|i| friends::ModRef { id: i.id.clone(), name: i.name.clone() }).collect();
+        me.native = installed.iter().filter(|i| i.kind == "Нативный").map(|i| i.name.clone()).collect();
+        me.face = friends::face_hex(&skin);
+        let mut allowed = vec![self.cfg.nickname.clone()];
+        allowed.extend(self.cfg.friends.iter().filter(|f| !f.name.is_empty()).map(|f| f.name.clone()));
+        allowed.sort();
+        allowed.dedup();
+        me.allowed.clone_from(&allowed);
+        drop(me);
+        *self.hub.allowed.lock().unwrap() = allowed;
+        let target = self.cfg.target.clone().unwrap_or(Target::Horizon);
+        let version = server_version(&target);
+        let saves = if target.is_horizon() { horizon::game_folder(&self.cfg.game_dir) } else { self.cfg.game_dir_for(&target) }.join("saves");
+        self.hub.me.lock().unwrap().game_id = version.clone().unwrap_or_default();
+        self.server_worlds = friends::worlds(&friends::server_folder(&self.cfg.game_dir, version.as_deref()), &saves);
+        for friend in &mut self.cfg.friends {
+            if let Some((presence, _)) = self.hub.status(&friend.code) {
+                if !presence.name.is_empty() {
+                    friend.name.clone_from(&presence.name);
+                }
+            }
+        }
+    }
+
+    fn face(&mut self, ctx: &egui::Context, hex: &str) -> Option<egui::TextureId> {
+        if !self.faces.contains_key(hex) {
+            let image = friends::face_image(hex)?;
+            self.faces.insert(hex.to_owned(), ctx.load_texture(format!("face-{hex}"), image, egui::TextureOptions::NEAREST));
+        }
+        self.faces.get(hex).map(egui::TextureHandle::id)
+    }
+
+    /// A friend's avatar with its light: green while they play or their server is open.
+    fn avatar(&mut self, ctx: &egui::Context, p: &egui::Painter, rect: Rect, status: &Option<(friends::Presence, bool)>) {
+        let hex = status.as_ref().map(|(s, _)| s.face.clone()).unwrap_or_default();
+        match self.face(ctx, &hex) {
+            Some(id) => {
+                p.image(id, rect, Rect::from_min_max(Pos2::ZERO, Pos2::new(1.0, 1.0)), Color32::WHITE);
+            }
+            None => {
+                p.rect_filled(rect, 4, CARD_HI);
+            }
+        }
+        let (_, lit) = friend_status(status);
+        let dot = rect.right_bottom() - vec2(1.0, 1.0);
+        p.circle_filled(dot, 6.0, PANEL);
+        p.circle_filled(dot, 4.0, if lit { GREEN } else { Color32::from_gray(90) });
+    }
+
+    /// The short list beside the speed chart; a click opens the friend's page.
+    fn friends_strip(&mut self, ctx: &egui::Context, ui: &mut Ui, rect: Rect) {
+        let p = ui.painter().clone();
+        text(&p, rect.left_top(), Align2::LEFT_TOP, "Друзья", bold(18.0), TEXT);
+        let list: Vec<_> = self.cfg.friends.clone();
+        if list.is_empty() {
+            let hint = text(&p, rect.left_top() + vec2(0.0, 36.0), Align2::LEFT_TOP, "Добавить друга →", font(13.0), ACCENT);
+            if ui.interact(hint, ui.id().with("friends_hint"), Sense::click()).on_hover_cursor(CursorIcon::PointingHand).clicked() {
+                self.page = Page::Friends;
+            }
+            return;
+        }
+        let mut order: Vec<_> = list.iter().map(|f| (f, self.hub.status(&f.code))).collect();
+        order.sort_by_key(|(f, s)| (!friend_status(s).1, !s.as_ref().is_some_and(|x| x.1), f.name.clone()));
+        let rows = ((rect.height() - 34.0) / 46.0).floor().max(1.0) as usize;
+        for (i, (friend, status)) in order.into_iter().take(rows).enumerate() {
+            let row = Rect::from_min_size(rect.left_top() + vec2(0.0, 34.0 + i as f32 * 46.0), vec2(rect.width(), 42.0));
+            let resp = ui.interact(row, ui.id().with(("friend_row", &friend.code)), Sense::click()).on_hover_cursor(CursorIcon::PointingHand);
+            if resp.hovered() {
+                p.rect_filled(row.expand(2.0), 8, CARD_HI);
+            }
+            let face = Rect::from_min_size(row.left_top() + vec2(2.0, 4.0), vec2(34.0, 34.0));
+            self.avatar(ctx, &p, face, &status);
+            text_fit(&p, face.right_top() + vec2(12.0, 0.0), Align2::LEFT_TOP, friend_name(friend), font(13.5), TEXT, rect.width() - 52.0);
+            text_fit(&p, face.right_top() + vec2(12.0, 19.0), Align2::LEFT_TOP, &friend_status(&status).0, font(11.5), MUTED, rect.width() - 52.0);
+            if resp.clicked() {
+                self.friend_selected = Some(friend.code.clone());
+                self.page = Page::Friends;
+            }
+        }
+    }
+
+    fn friends_page(&mut self, ctx: &egui::Context, ui: &mut Ui, body: Rect) {
+        let left = Rect::from_min_size(body.min, vec2(370.0, body.height()));
+        let right = Rect::from_min_max(Pos2::new(left.right() + GAP, body.top()), body.max);
+        let server = Rect::from_min_size(Pos2::new(right.left(), right.bottom() - 210.0), vec2(right.width(), 210.0));
+        let details = Rect::from_min_max(right.min, Pos2::new(right.right(), server.top() - GAP));
+        self.friends_list(ctx, ui, left);
+        self.friend_details(ctx, ui, details);
+        self.server_card(ctx, ui, server);
+    }
+
+    fn friends_list(&mut self, ctx: &egui::Context, ui: &mut Ui, rect: Rect) {
+        let p = ui.painter().clone();
+        card(&p, rect);
+        text(&p, rect.left_top() + vec2(22.0, 18.0), Align2::LEFT_TOP, "Твой код друга", bold(16.0), TEXT);
+        text(&p, rect.left_top() + vec2(22.0, 46.0), Align2::LEFT_TOP, &self.cfg.friend_code, font(13.5), ACCENT);
+        let copy = Rect::from_min_size(rect.left_top() + vec2(22.0, 72.0), vec2(rect.width() - 44.0, 34.0));
+        let mut c = child_ui(ui, copy, "friend_copy", Layout::left_to_right(Align::Center));
+        if pill(&mut c, "Скопировать код", false).clicked() {
+            ctx.copy_text(self.cfg.friend_code.clone());
+        }
+        let add = Rect::from_min_size(rect.left_top() + vec2(22.0, 122.0), vec2(rect.width() - 44.0, 36.0));
+        let mut c = child_ui(ui, add, "friend_add", Layout::right_to_left(Align::Center));
+        c.spacing_mut().item_spacing.x = 8.0;
+        let pressed = pill(&mut c, "Добавить", false).clicked();
+        let edit = c.add(egui::TextEdit::singleline(&mut self.friend_input).hint_text("Код друга").desired_width(f32::INFINITY));
+        if pressed || (edit.lost_focus() && ui.input(|i| i.key_pressed(egui::Key::Enter))) {
+            self.add_friend();
+        }
+        if let Some(error) = &self.friend_error {
+            text_fit(&p, add.left_bottom() + vec2(0.0, 4.0), Align2::LEFT_TOP, error, font(11.5), RED, add.width());
+        }
+
+        // The VPN banner sits at the bottom, the list takes the space above it.
+        let banner_w = rect.width() - 24.0;
+        let banner = Rect::from_min_size(Pos2::new(rect.left() + 12.0, rect.bottom() - 12.0 - banner_w * 500.0 / 1024.0), vec2(banner_w, banner_w * 500.0 / 1024.0));
+        let note = banner.left_top() + vec2(10.0, -26.0);
+        text_fit(&p, note, Align2::LEFT_TOP, "Для работы сервера нужен VPN", bold(13.0), TEXT, banner_w - 20.0);
+        p.add(egui::epaint::RectShape::filled(banner, 12, Color32::WHITE).with_texture(self.vpn_banner.id(), Rect::from_min_max(Pos2::ZERO, Pos2::new(1.0, 1.0))));
+        let click = ui.interact(banner, ui.id().with("vpn_banner"), Sense::click()).on_hover_cursor(CursorIcon::PointingHand);
+        p.rect_stroke(banner, 12, Stroke::new(1.0_f32, if click.hovered() { ACCENT } else { BORDER }), egui::StrokeKind::Inside);
+        if click.clicked() {
+            ctx.open_url(egui::OpenUrl::new_tab("https://24stealth.ru/"));
+        }
+
+        let area = Rect::from_min_max(rect.min + vec2(12.0, 184.0), Pos2::new(rect.right() - 12.0, note.y - 10.0));
+        let list = self.cfg.friends.clone();
+        if list.is_empty() {
+            text(&p, area.left_top() + vec2(10.0, 8.0), Align2::LEFT_TOP, "Пока никого: обменяйтесь кодами", font(13.0), MUTED);
+            return;
+        }
+        let mut c = child_ui(ui, area, "friend_list", Layout::top_down(Align::Min));
+        egui::ScrollArea::vertical().id_salt("friend_scroll").auto_shrink([false; 2]).show(&mut c, |ui| {
+            for friend in &list {
+                let status = self.hub.status(&friend.code);
+                let (row, resp) = ui.allocate_exact_size(vec2(ui.available_width(), 56.0), Sense::click());
+                let selected = self.friend_selected.as_ref() == Some(&friend.code);
+                if selected || resp.hovered() {
+                    ui.painter().rect_filled(row, 10, CARD_HI);
+                }
+                let painter = ui.painter().clone();
+                let face = Rect::from_min_size(row.left_top() + vec2(10.0, 10.0), vec2(36.0, 36.0));
+                self.avatar(ctx, &painter, face, &status);
+                text_fit(&painter, face.right_top() + vec2(14.0, 0.0), Align2::LEFT_TOP, friend_name(friend), font(14.5), TEXT, row.width() - 70.0);
+                text_fit(&painter, face.right_top() + vec2(14.0, 20.0), Align2::LEFT_TOP, &friend_status(&status).0, font(12.0), MUTED, row.width() - 70.0);
+                if resp.on_hover_cursor(CursorIcon::PointingHand).clicked() {
+                    self.friend_selected = Some(friend.code.clone());
+                }
+            }
+        });
+    }
+
+    fn add_friend(&mut self) {
+        self.friend_error = None;
+        let Some(code) = friends::parse_code(&self.friend_input) else {
+            self.friend_error = Some("Код выглядит так: ZYN-XXXXX-XXXXX-XXXXX-XXXXX".into());
+            return;
+        };
+        if code == self.cfg.friend_code {
+            self.friend_error = Some("Это твой собственный код".into());
+            return;
+        }
+        if !self.cfg.friends.iter().any(|f| f.code == code) {
+            self.cfg.friends.push(crate::config::Friend { code: code.clone(), name: String::new() });
+            self.hub.friends.lock().unwrap().push(code.clone());
+            // The friend adds this player back by itself: no need to swap codes both ways.
+            self.hub.invites.lock().unwrap().push(code.clone());
+            self.hub.refresh();
+        }
+        self.friend_selected = Some(code);
+        self.friend_input.clear();
+    }
+
+    fn friend_details(&mut self, ctx: &egui::Context, ui: &mut Ui, rect: Rect) {
+        let p = ui.painter().clone();
+        card(&p, rect);
+        let Some(friend) = self.friend_selected.clone().and_then(|code| self.cfg.friends.iter().find(|f| f.code == code).cloned()) else {
+            text(&p, rect.left_top() + vec2(22.0, 20.0), Align2::LEFT_TOP, "Выбери друга", bold(18.0), TEXT);
+            text(&p, rect.left_top() + vec2(22.0, 50.0), Align2::LEFT_TOP, "Здесь будут его версия, моды и кнопка «Присоединиться».", font(13.0), MUTED);
+            return;
+        };
+        let status = self.hub.status(&friend.code);
+        let face = Rect::from_min_size(rect.left_top() + vec2(22.0, 20.0), vec2(56.0, 56.0));
+        self.avatar(ctx, &p, face, &status);
+        text_fit(&p, face.right_top() + vec2(16.0, 4.0), Align2::LEFT_TOP, friend_name(&friend), bold(20.0), TEXT, rect.width() - 240.0);
+        let (line, _) = friend_status(&status);
+        text_fit(&p, face.right_top() + vec2(16.0, 32.0), Align2::LEFT_TOP, &line, font(13.0), MUTED, rect.width() - 240.0);
+        let remove = Rect::from_min_size(rect.right_top() + vec2(-122.0, 18.0), vec2(104.0, 34.0));
+        let mut c = child_ui(ui, remove, "friend_remove", Layout::right_to_left(Align::Center));
+        if pill(&mut c, "Удалить", false).clicked() {
+            self.cfg.friends.retain(|f| f.code != friend.code);
+            self.hub.friends.lock().unwrap().retain(|code| *code != friend.code);
+            self.friend_selected = None;
+            return;
+        }
+        let Some((presence, online)) = status else {
+            text(&p, face.left_bottom() + vec2(0.0, 22.0), Align2::LEFT_TOP, "Друг ещё не появлялся в сети. Статус придёт, когда он откроет лаунчер.", font(13.0), MUTED);
+            return;
+        };
+        let mut y = face.bottom() + 14.0;
+        let mut row = |label: &str, value: &str| {
+            text(&p, Pos2::new(rect.left() + 22.0, y), Align2::LEFT_TOP, label, font(12.5), MUTED);
+            text_fit(&p, Pos2::new(rect.left() + 130.0, y), Align2::LEFT_TOP, value, font(13.0), TEXT, rect.width() - 152.0);
+            y += 23.0;
+        };
+        row("Версия", if presence.game.is_empty() { "не выбрана" } else { &presence.game });
+        if presence.address.is_some() {
+            row("Мир", &presence.world);
+            let names = if presence.players.is_empty() { "пока никого".to_owned() } else { presence.players.join(", ") };
+            row("Игроки", &format!("{} из {}: {names}", presence.players.len(), presence.max_players));
+        }
+        // Only Horizon's add-ons are matched; an ordinary version's server is plain Minecraft.
+        if presence.horizon {
+            let names: Vec<&str> = presence.mods.iter().map(|m| m.name.as_str()).collect();
+            row("Моды", &if names.is_empty() { "нет".to_owned() } else { names.join(", ") });
+            row("Свои моды", &if presence.native.is_empty() { "нет".to_owned() } else { presence.native.join(", ") });
+        }
+        let button = Rect::from_min_size(Pos2::new(rect.left() + 22.0, rect.bottom() - 66.0), vec2(250.0, 48.0));
+        let hosting = presence.address.is_some();
+        // A friend playing on this player's own server: nothing to join, it is already here.
+        let on_my_server = !hosting && presence.visiting.as_deref() == Some(self.cfg.nickname.as_str());
+        let target = presence.address.clone().or_else(|| presence.visiting_address.clone()).filter(|_| online && !on_my_server);
+        match target {
+            Some(address) => {
+                let nick = &self.cfg.nickname;
+                let host_name = presence.visiting.clone().filter(|_| !hosting).unwrap_or_else(|| presence.name.clone());
+                let block = if self.hub.me.lock().unwrap().playing {
+                    Some("Игра уже запущена: сначала закрой её".to_owned())
+                } else if host_name == *nick {
+                    Some("У вас одинаковый ник: смени его в настройках".to_owned())
+                } else if hosting && !presence.allowed.contains(nick) {
+                    Some(format!("{host_name} должен добавить тебя в друзья"))
+                } else if hosting && presence.max_players > 0 && presence.players.len() as u32 >= presence.max_players {
+                    Some("Сервер заполнен".to_owned())
+                } else {
+                    None
+                };
+                let mut c = child_ui(ui, button, "friend_join", Layout::top_down(Align::Min));
+                if primary(&mut c, "Присоединиться", button.size(), !self.task.running() && block.is_none()).clicked() {
+                    self.join_friend(ctx, &presence, &address, &host_name);
+                }
+                let default_note = if hosting { "Версия и моды настроятся сами".to_owned() } else { format!("Вход на сервер игрока {host_name}") };
+                let color = if block.is_some() { RED } else { MUTED };
+                let note = block.unwrap_or(default_note);
+                text_fit(&p, button.right_center() + vec2(16.0, 0.0), Align2::LEFT_CENTER, &note, font(12.5), color, rect.width() - 310.0);
+            }
+            None if on_my_server && online => {
+                text(&p, button.left_center(), Align2::LEFT_CENTER, "Играет на твоём сервере", font(12.5), MUTED);
+            }
+            None => {
+                text(&p, button.left_center(), Align2::LEFT_CENTER, "Сервер закрыт: присоединиться можно, когда друг его откроет", font(12.5), MUTED);
+            }
+        }
+    }
+
+    fn join_friend(&mut self, ctx: &egui::Context, presence: &friends::Presence, address: &str, host_name: &str) {
+        if !self.cfg.nickname_valid() {
+            self.page = Page::Settings;
+            return;
+        }
+        let target = match (presence.horizon, presence.fine) {
+            (true, true) => Target::HorizonFine,
+            (true, false) => Target::Horizon,
+            // A vanilla server: any client of its version fits, also for a host on Fabric.
+            _ => Target::Vanilla(presence.game_id.clone()),
+        };
+        self.cfg.target = Some(target.clone());
+        let mut cfg = self.cfg.clone();
+        cfg.join_server = Some(address.to_owned());
+        let manifest = self.remote.lock().unwrap().manifest.clone();
+        let mods = presence.mods.clone();
+        let (close, hide) = (cfg.close_on_launch, cfg.hide_on_launch);
+        {
+            let mut me = self.hub.me.lock().unwrap();
+            me.visiting = Some(host_name.to_owned());
+            me.visiting_address = Some(address.to_owned());
+        }
+        self.spawn_job(ctx, "Подключение к другу", close, hide, move |task| {
+            if target.is_horizon() {
+                run_target(&cfg, manifest.as_ref(), &target, false, task)?;
+                friends::match_mods(&horizon::game_folder(&cfg.game_dir), &mods, task)?;
+            }
+            run_target(&cfg, manifest.as_ref(), &target, true, task)
+        });
+    }
+
+    fn server_card(&mut self, ctx: &egui::Context, ui: &mut Ui, rect: Rect) {
+        let p = ui.painter().clone();
+        card(&p, rect);
+        text(&p, rect.left_top() + vec2(22.0, 18.0), Align2::LEFT_TOP, "Мой сервер", bold(16.0), TEXT);
+        let target = self.cfg.target.clone().unwrap_or(Target::Horizon);
+        let supported = target.is_horizon() || server_version(&target).is_some();
+        let line = if supported {
+            format!("{} на этом компьютере. Войти могут только твои друзья.", target.title())
+        } else {
+            format!("{}: сервер работает с Horizon, обычными версиями и Fabric. Выбери одну из них.", target.title())
+        };
+        let host = self.hub.host.lock().unwrap().clone();
+        // An error takes the place of this line, in one line, so the buttons below stay put.
+        let (line, color) = match &host {
+            friends::HostState::Failed(error) => (error.clone(), RED),
+            _ => (line, MUTED),
+        };
+        text_fit(&p, rect.left_top() + vec2(22.0, 44.0), Align2::LEFT_TOP, &line, font(12.5), color, rect.width() - 44.0);
+        let area = Rect::from_min_max(rect.min + vec2(22.0, 72.0), rect.max - vec2(22.0, 14.0));
+        let mut c = child_ui(ui, area, "server_card", Layout::top_down(Align::Min));
+        c.spacing_mut().item_spacing.y = 8.0;
+        match host {
+            friends::HostState::Starting(stage) => {
+                c.label(egui::RichText::new(stage).color(ACCENT));
+            }
+            friends::HostState::On(address) => {
+                c.label(egui::RichText::new(format!("Открыт: {address}")).color(GREEN).size(14.0));
+                let me = self.hub.me.lock().unwrap().clone();
+                let names = if me.players.is_empty() { "пока никого".to_owned() } else { me.players.join(", ") };
+                c.label(egui::RichText::new(format!("Мир: {}  ·  Игроки {} из {}: {names}", me.world, me.players.len(), me.max_players)).color(MUTED).size(12.5));
+                c.horizontal(|ui| {
+                    if pill(ui, "Играть на своём сервере", false).clicked() {
+                        self.play_own_server(ctx);
+                    }
+                    if pill(ui, "Закрыть сервер", false).clicked() {
+                        let hub = self.hub.clone();
+                        std::thread::spawn(move || hub.stop_server());
+                    }
+                });
+            }
+            _ => {
+                c.horizontal(|ui| {
+                    ui.spacing_mut().item_spacing.x = 8.0;
+                    if pill(ui, "Новый мир", self.cfg.server_new_world).clicked() {
+                        self.cfg.server_new_world = true;
+                    }
+                    if pill(ui, "Готовый мир", !self.cfg.server_new_world).clicked() {
+                        self.cfg.server_new_world = false;
+                    }
+                    let width = ui.available_width() - 4.0;
+                    if self.cfg.server_new_world {
+                        ui.add(egui::TextEdit::singleline(&mut self.cfg.server_world_name).hint_text("Название мира").desired_width(width));
+                    } else if self.server_worlds.is_empty() {
+                        ui.label(egui::RichText::new("Готовых миров пока нет").color(MUTED));
+                    } else {
+                        egui::ComboBox::from_id_salt("server_world").width(width).selected_text(self.cfg.server_world.clone()).show_ui(ui, |ui| {
+                            for world in &self.server_worlds {
+                                let label = if world.on_server { world.name.clone() } else { format!("{} (копия из одиночной игры)", world.name) };
+                                ui.selectable_value(&mut self.cfg.server_world, world.name.clone(), label);
+                            }
+                        });
+                    }
+                });
+                c.horizontal(|ui| {
+                    ui.spacing_mut().item_spacing.x = 8.0;
+                    if pill(ui, "Выживание", !self.cfg.server_creative).clicked() {
+                        self.cfg.server_creative = false;
+                    }
+                    if pill(ui, "Творческий", self.cfg.server_creative).clicked() {
+                        self.cfg.server_creative = true;
+                    }
+                    ui.add_space(8.0);
+                    ui.label(egui::RichText::new("Игроков").color(MUTED));
+                    ui.spacing_mut().slider_width = (ui.available_width() - 56.0).max(40.0);
+                    ui.add(egui::Slider::new(&mut self.cfg.server_max_players, 2..=20));
+                });
+                let world_ready = self.cfg.server_new_world || self.server_worlds.iter().any(|w| w.name == self.cfg.server_world);
+                let can_open = supported && self.cfg.server_eula && world_ready && !self.task.running();
+                let mut open = false;
+                c.horizontal(|ui| {
+                    ui.checkbox(&mut self.cfg.server_eula, "Принимаю");
+                    ui.hyperlink_to("EULA Minecraft", "https://aka.ms/MinecraftEULA");
+                    ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
+                        open = primary(ui, "Открыть сервер", vec2(190.0, 38.0), can_open).clicked();
+                    });
+                });
+                if open {
+                    self.open_server(ctx);
+                }
+            }
+        }
+    }
+
+    fn open_server(&mut self, ctx: &egui::Context) {
+        let cfg = self.cfg.clone();
+        let manifest = self.remote.lock().unwrap().manifest.clone();
+        let hub = self.hub.clone();
+        let world = if cfg.server_new_world {
+            friends::WorldChoice::New(cfg.server_world_name.clone())
+        } else {
+            match self.server_worlds.iter().find(|w| w.name == cfg.server_world) {
+                Some(world) => friends::WorldChoice::Existing(world.clone()),
+                None => return,
+            }
+        };
+        let target = cfg.target.clone().unwrap_or(Target::Horizon);
+        let saves = if target.is_horizon() { horizon::game_folder(&cfg.game_dir) } else { cfg.game_dir_for(&target) }.join("saves");
+        let ram_mb = (cfg.ram_mb / 2).clamp(1024, 2048);
+        *hub.host.lock().unwrap() = friends::HostState::Starting("Подготовка сервера".into());
+        self.spawn_job(ctx, "Открываю сервер", false, false, move |task| {
+            let prepared = match server_version(&target) {
+                Some(version) => friends::prepare_java(&cfg.game_dir, &cfg.java_path, manifest.as_ref(), &version, ram_mb, task),
+                None => run_target(&cfg, manifest.as_ref(), &Target::Horizon, false, task).map(|_| friends::ServerKind::Horizon),
+            };
+            let kind = match prepared {
+                Ok(kind) => kind,
+                Err(e) => {
+                    *hub.host.lock().unwrap() = friends::HostState::Failed(format!("{e:#}"));
+                    return Err(e);
+                }
+            };
+            let plan = friends::ServerPlan { kind, saves, world, max_players: cfg.server_max_players, creative: cfg.server_creative };
+            hub.start_server(&cfg.game_dir, plan, task)?;
+            Ok(None)
+        });
+    }
+
+    fn play_own_server(&mut self, ctx: &egui::Context) {
+        let target = self.cfg.target.clone().unwrap_or(Target::Horizon);
+        self.cfg.target = Some(target.clone());
+        let mut cfg = self.cfg.clone();
+        cfg.join_server = Some(format!("127.0.0.1:{}", friends::SERVER_PORT));
+        let manifest = self.remote.lock().unwrap().manifest.clone();
+        let hide = cfg.hide_on_launch;
+        self.spawn_job(ctx, "Запуск", false, hide, move |task| run_target(&cfg, manifest.as_ref(), &target, true, task));
     }
 
     fn versions(&mut self, ctx: &egui::Context, ui: &mut Ui, body: Rect) {
@@ -2246,6 +2739,36 @@ fn versions_hint(f: Filter) -> &'static str {
     }
 }
 
+/// The Minecraft version a friends' server runs for `target`. None for Horizon (it has its own
+/// server) and for loaders such as Forge, whose mods a vanilla server.jar can't carry.
+fn server_version(target: &Target) -> Option<String> {
+    match target {
+        Target::Vanilla(id) => Some(id.clone()),
+        Target::Fabric(game) => Some(game.clone()),
+        Target::Installed { id, .. } => match target.kind().split(" · ").next() {
+            Some("Vanilla") => Some(id.clone()),
+            Some("Fabric") => id.rsplit('-').next().map(str::to_owned),
+            _ => None,
+        },
+        Target::Horizon | Target::HorizonFine => None,
+    }
+}
+
+fn friend_name(friend: &crate::config::Friend) -> &str {
+    if friend.name.is_empty() { &friend.code } else { &friend.name }
+}
+
+/// A friend's status line, and whether their light is on.
+fn friend_status(status: &Option<(friends::Presence, bool)>) -> (String, bool) {
+    match status {
+        Some((p, true)) if p.address.is_some() => (format!("Сервер открыт · {} · {} из {}", p.world, p.players.len(), p.max_players), true),
+        Some((p, true)) if p.visiting.is_some() => (format!("Играет у {}", p.visiting.as_deref().unwrap_or_default()), true),
+        Some((p, true)) if p.playing => (format!("Играет · {}", p.game), true),
+        Some((_, true)) => ("В лаунчере".into(), false),
+        _ => ("Не в сети".into(), false),
+    }
+}
+
 fn nav_item(ui: &mut Ui, rect: Rect, icon: &str, label: &str, selected: bool) -> bool {
     let resp = ui.interact(rect, ui.id().with(("nav", label)), Sense::click()).on_hover_cursor(CursorIcon::PointingHand);
     let p = ui.painter();
@@ -2347,7 +2870,7 @@ fn run_target(cfg: &Config, manifest: Option<&Manifest>, target: &Target, play: 
             return Ok(None);
         }
         let skin_file = skin::effective_path(cfg.skin_path.as_deref(), game);
-        let player = horizon::Player { name: &cfg.nickname, skin: skin_file.as_deref() };
+        let player = horizon::Player { name: &cfg.nickname, skin: skin_file.as_deref(), slim: cfg.skin_slim, server: cfg.join_server.as_deref() };
         // «Horizon OptiFine» is the same install with Zyntra Fine, its extras and zoom.
         let fine = (*target == Target::HorizonFine).then_some((&cfg.fine, &cfg.hz_extras));
         if cfg.max_gamma {
@@ -2383,13 +2906,18 @@ fn run_target(cfg: &Config, manifest: Option<&Manifest>, target: &Target, play: 
     if !play {
         return Ok(None);
     }
-    let opts = LaunchOptions { game_dir, nickname: cfg.nickname.clone(), ram_mb: cfg.ram_mb, width: cfg.width, height: cfg.height };
+    let opts = LaunchOptions { game_dir, nickname: cfg.nickname.clone(), ram_mb: cfg.ram_mb, width: cfg.width, height: cfg.height, server: cfg.join_server.clone() };
     Ok(Some(minecraft::launch(&prepared, &opts, task)?))
 }
 
 impl eframe::App for App {
+    fn on_exit(&mut self, _gl: Option<&eframe::glow::Context>) {
+        self.hub.goodbye();
+    }
+
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         self.sample_speed();
+        self.sync_presence();
         let max_ram = system::max_game_ram_mb(self.total_ram);
         if self.cfg.ram_auto {
             self.cfg.ram_mb = system::recommended_ram_mb(self.total_ram);
@@ -2422,11 +2950,17 @@ impl eframe::App for App {
                 Page::Mods => self.mods_page(ctx, ui, body),
                 Page::Shaders => self.shaders_page(ctx, ui, body),
                 Page::Fine => self.fine_page(ctx, ui, body),
+                Page::Friends => self.friends_page(ctx, ui, body),
                 Page::Console => self.console(ctx, ui, body),
                 Page::Settings => self.settings(ui, body),
             }
         });
 
+        for code in std::mem::take(&mut *self.hub.added_me.lock().unwrap()) {
+            if code != self.cfg.friend_code && !self.cfg.friends.iter().any(|f| f.code == code) {
+                self.cfg.friends.push(crate::config::Friend { code, name: String::new() });
+            }
+        }
         if self.cfg.skin_path != self.skin_loaded {
             self.reload_skin();
         }

@@ -3,6 +3,7 @@
 mod app;
 mod config;
 mod fabric;
+mod friends;
 mod horizon;
 mod hz_mods;
 mod java;
@@ -15,6 +16,7 @@ mod net;
 mod skin;
 mod system;
 mod task;
+mod tunnel;
 mod ui;
 mod viewer;
 mod window;

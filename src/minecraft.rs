@@ -446,6 +446,8 @@ pub struct LaunchOptions {
     pub ram_mb: u32,
     pub width: u32,
     pub height: u32,
+    /// Join this server (HOST:PORT) right after the game starts.
+    pub server: Option<String>,
 }
 
 fn collect_args(list: &Value, features: &Features, out: &mut Vec<String>) {
@@ -511,6 +513,14 @@ pub fn launch(p: &Prepared, opts: &LaunchOptions, task: &Task) -> Result<Child> 
         format!("-Xmx{}M", opts.ram_mb),
         "-Xms512M".into(),
         "-Dlog4j2.formatMsgNoLookups=true".into(),
+        // 1.16.4–1.19 ask Microsoft's services whether multiplayer is allowed, and an answer
+        // for a player with no account can switch it off. A services address that can't be
+        // reached makes the game treat the player as offline, with multiplayer on, as in TLauncher.
+        // The other hosts are Mojang's own: authlib takes custom hosts only all four together.
+        "-Dminecraft.api.auth.host=https://authserver.mojang.com".into(),
+        "-Dminecraft.api.account.host=https://api.mojang.com".into(),
+        "-Dminecraft.api.session.host=https://sessionserver.mojang.com".into(),
+        "-Dminecraft.api.services.host=http://127.0.0.1:9".into(),
     ];
     if p.v["arguments"]["jvm"].is_array() {
         collect_args(&p.v["arguments"]["jvm"], &features, &mut raw);
@@ -523,6 +533,19 @@ pub fn launch(p: &Prepared, opts: &LaunchOptions, task: &Task) -> Result<Child> 
     } else if let Some(legacy) = p.v["minecraftArguments"].as_str() {
         raw.extend(legacy.split_whitespace().map(str::to_owned));
         raw.extend(["--width".into(), "${resolution_width}".into(), "--height".into(), "${resolution_height}".into()]);
+    }
+    // Without a Microsoft account newer versions ask Microsoft whether this player may play
+    // online, get a refusal and switch multiplayer off. This switch skips that check.
+    if p.v["arguments"]["game"].is_array() {
+        raw.push("--offlineDeveloperMode".into());
+    }
+    if let Some(server) = &opts.server {
+        // Versions with Quick Play ignore the old --server; the oldest ones know only that.
+        if p.v["arguments"]["game"].to_string().contains("is_quick_play_multiplayer") {
+            raw.extend(["--quickPlayMultiplayer".into(), server.clone()]);
+        } else if let Some((host, port)) = server.rsplit_once(':') {
+            raw.extend(["--server".into(), host.to_owned(), "--port".into(), port.to_owned()]);
+        }
     }
     let args: Vec<String> = raw.iter().map(|a| substitute(a, &vars)).collect();
 

@@ -183,6 +183,27 @@ pub struct Config {
     pub skin_path: Option<PathBuf>,
     /// Slim (3px) arms.
     pub skin_slim: bool,
+    /// This player's friend code (their secret status channel).
+    pub friend_code: String,
+    pub friends: Vec<Friend>,
+    /// The player accepted the Minecraft EULA for hosting a server.
+    pub server_eula: bool,
+    /// Friends' server: a new world (else `server_world`), its name, player limit and mode.
+    pub server_new_world: bool,
+    pub server_world_name: String,
+    pub server_world: String,
+    pub server_max_players: u32,
+    pub server_creative: bool,
+    /// Server to join on this launch; set on a copy of the settings, never saved.
+    #[serde(skip)]
+    pub join_server: Option<String>,
+}
+
+#[derive(Serialize, Deserialize, Clone, PartialEq)]
+pub struct Friend {
+    pub code: String,
+    /// Their nickname when last seen.
+    pub name: String,
 }
 
 impl Default for Config {
@@ -205,6 +226,15 @@ impl Default for Config {
             target: None,
             skin_path: None,
             skin_slim: false,
+            friend_code: String::new(),
+            friends: Vec::new(),
+            server_eula: false,
+            server_new_world: true,
+            server_world_name: "Мир друзей".into(),
+            server_world: String::new(),
+            server_max_players: 5,
+            server_creative: false,
+            join_server: None,
         }
     }
 }

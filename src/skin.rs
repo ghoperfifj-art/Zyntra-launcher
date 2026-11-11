@@ -81,11 +81,9 @@ pub fn apply_pack(root: &Path, skin_path: Option<&Path>, modern: bool, forge: bo
     enable_in_options(&root.join("options.txt"), if modern { "file/ZyntraSkin" } else { PACK_NAME }, modern, forge)
 }
 
-/// Horizon reads player skins straight from its prepared assets folder (no resource packs),
-/// so the chosen skin replaces those PNGs; the originals are kept as `*.png.orig` and put
-/// back when `skin_path` is None.
-pub fn apply_to_assets(assets: &Path, skin_path: Option<&Path>) -> Result<()> {
-    let skin = skin_path.map(load).transpose()?;
+/// Puts back Horizon's own player textures. Launcher 0.1.1 and older overwrote them with the
+/// skin (keeping `*.png.orig`); Horizon now gets the skin from `HORIZON_OFFLINE_SKIN` instead.
+pub fn restore_assets(assets: &Path) -> Result<()> {
     for sub in ["wide", "slim"] {
         let dir = assets.join("textures/entity/player").join(sub);
         for entry in fs::read_dir(&dir).into_iter().flatten().flatten() {
@@ -94,18 +92,9 @@ pub fn apply_to_assets(assets: &Path, skin_path: Option<&Path>) -> Result<()> {
                 continue;
             }
             let backup = path.with_extension("png.orig");
-            match &skin {
-                Some(img) => {
-                    if !backup.exists() {
-                        fs::copy(&path, &backup)?;
-                    }
-                    img.save(&path)?;
-                }
-                None if backup.exists() => {
-                    fs::copy(&backup, &path)?;
-                    fs::remove_file(&backup)?;
-                }
-                None => {}
+            if backup.exists() {
+                fs::copy(&backup, &path)?;
+                fs::remove_file(&backup)?;
             }
         }
     }

@@ -149,24 +149,35 @@ pub fn install(game_dir: &Path, task: &Task) -> Result<Build> {
     }
     let target = bin_dir(game_dir);
     if target.exists() {
-        // Keep what lives in the game folder across updates: prepared resources (.local, so
-        // no new prepare), the player's mods and their switches, settings and mod configs.
-        for name in [
+        // Keep what lives in the game folder across updates. Everything the new build doesn't
+        // bring is the player's (worlds in saves/, servers.dat, screenshots, the player name...)
+        // and moves over as it is; of what the build does bring, these stay the player's own:
+        // prepared resources (.local, so no new prepare), mods and their switches, settings.
+        const OWN: [&str; 11] = [
             ".local",
             "horizon-mods",
             "horizon-native-mods",
             "horizon-mods.txt",
             "options.txt",
             "config",
+            "saves",
             "shaderpacks",
             "resourcepacks",
             "horizon-graphics.txt",
             "horizon-extras.txt",
-        ] {
-            let old = target.join(name);
-            if old.exists() {
-                fs::rename(&old, staging.join(name)).ok();
+        ];
+        for entry in fs::read_dir(&target)?.flatten() {
+            let name = entry.file_name();
+            let new = staging.join(&name);
+            let own = OWN.iter().any(|o| name == *o);
+            if new.exists() && !own {
+                continue;
             }
+            if new.exists() {
+                if new.is_dir() { fs::remove_dir_all(&new)? } else { fs::remove_file(&new)? }
+            }
+            // A world must never be deleted with the old build: stop here instead.
+            fs::rename(entry.path(), &new).with_context(|| format!("Не удалось перенести {} в новую версию Horizon: закрой игру и попробуй снова", name.to_string_lossy()))?;
         }
         fs::remove_dir_all(&target).context("Закрой Horizon перед обновлением")?;
     }
@@ -237,7 +248,7 @@ pub fn prepare(game_dir: &Path, manifest: Option<&Manifest>, java_override: &str
     };
 
     // Put the original skins back first so the check sees untouched resources.
-    crate::skin::apply_to_assets(&assets_dir(game_dir), None).ok();
+    crate::skin::restore_assets(&assets_dir(game_dir)).ok();
     task.stage("Horizon: проверка ресурсов");
     if run_logged(prepare_cmd(&["--check"]), task).unwrap_or(false) {
         mark_prepared(game_dir);
@@ -265,6 +276,9 @@ pub fn prepare(game_dir: &Path, manifest: Option<&Manifest>, java_override: &str
 pub struct Player<'a> {
     pub name: &'a str,
     pub skin: Option<&'a Path>,
+    pub slim: bool,
+    /// Join this server right after the game starts.
+    pub server: Option<&'a str>,
 }
 
 /// Sets `key:value` lines in a Minecraft-style settings file, keeping every other line.
@@ -383,9 +397,14 @@ pub fn launch(
             Err(e) => task.log(format!("Не удалось применить Zyntra Fine: {e:#}")),
         }
     }
-    // The skin replaces Horizon's default player textures (originals kept as *.png.orig).
-    if let Err(e) = crate::skin::apply_to_assets(&assets_dir(game_dir), player.skin) {
-        task.log(format!("Скин не подключён: {e:#}"));
+    // Connected glass belongs to Horizon OptiFine; plain Horizon keeps the vanilla look.
+    // Xray and connected glass (Horizon OptiFine only) go into the prepared resources.
+    let resources = assets_dir(game_dir).join("../..");
+    if let Err(e) = crate::hz_mods::apply_own_packs(&bin, &resources, fine.is_some()) {
+        task.log(format!("Xray или соединённое стекло не подключены: {e:#}"));
+    }
+    if let Err(e) = crate::skin::restore_assets(&assets_dir(game_dir)) {
+        task.log(format!("Не удалось вернуть текстуры игроков: {e:#}"));
     }
     task.stage("Запуск Horizon");
     let log = fs::File::create(home.join("zyntra.log"))?;
@@ -401,9 +420,22 @@ pub fn launch(
     // No HORIZON_MEMORY_LIMIT_MB: Horizon is native and manages its own memory, and newer
     // nightlies refuse to start under a limit sized for Java versions.
     cmd.current_dir(&bin).env("HORIZON_HOME", &home);
-    // Horizon's own offline-profile name
+    // The multiplayer name: without --name Horizon uses one it made up once and kept,
+    // often the same "Player" for everyone, and a server lets only one of them in.
     if !player.name.is_empty() {
-        cmd.env("HORIZON_PLAYER_NAME", player.name);
+        cmd.arg("--name").arg(player.name);
+    }
+    if let Some(server) = player.server {
+        cmd.arg("--server").arg(server);
+    }
+    // Horizon draws this skin on the offline local player, in worlds and on servers.
+    match player.skin.map(|path| crate::skin::load(path).map(|_| path)) {
+        Some(Ok(path)) => {
+            cmd.env("HORIZON_OFFLINE_SKIN", path);
+            cmd.env("HORIZON_OFFLINE_SKIN_MODEL", if player.slim { "slim" } else { "classic" });
+        }
+        Some(Err(e)) => task.log(format!("Скин не подключён: {e:#}")),
+        None => {}
     }
     // Zoom talks to the game over its local control endpoint (localhost + token).
     let endpoint = crate::zoom::endpoint_file(&home);
@@ -421,7 +453,30 @@ pub fn launch(
         use std::os::windows::process::CommandExt;
         cmd.creation_flags(0x0800_0000); // CREATE_NO_WINDOW: no black console next to the game
     }
-    let child = cmd.spawn().context("Не удалось запустить horizon-client")?;
+    let mut child = cmd.spawn().context("Не удалось запустить horizon-client")?;
+    // When Horizon builds its resource pack cache anew (after an update, or with new packs),
+    // Windows 11 can refuse it the folder links it has just made in that cache (os error 448)
+    // and the game stops while loading. The cache is kept all the same, so a second start works.
+    let game_log = home.join("zyntra.log");
+    let started = std::time::Instant::now();
+    while started.elapsed() < std::time::Duration::from_secs(120) {
+        match child.try_wait() {
+            Ok(None) => {
+                if fs::read_to_string(&game_log).is_ok_and(|t| t.contains("resources loaded in")) {
+                    break;
+                }
+                std::thread::sleep(std::time::Duration::from_millis(500));
+            }
+            Ok(Some(status)) => {
+                if !status.success() && fs::read_to_string(&game_log).is_ok_and(|t| t.contains("os error 448")) {
+                    task.log("Horizon обновил кэш ресурс-паков: запускаю игру ещё раз");
+                    child = cmd.spawn().context("Не удалось запустить horizon-client")?;
+                }
+                break;
+            }
+            Err(_) => break,
+        }
+    }
     if let Some(key_label) = zoom {
         let (pid, key, options) = (child.id(), crate::zoom::key_code(&key_label), bin.join("options.txt"));
         std::thread::spawn(move || crate::zoom::run(pid, endpoint, options, key));

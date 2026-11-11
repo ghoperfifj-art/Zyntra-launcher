@@ -69,3 +69,26 @@ pub fn max_game_ram_mb(total: u32) -> u32 {
 pub fn recommended_ram_mb(total: u32) -> u32 {
     (total / 2 / 512 * 512).clamp(2048, 8192).min(max_game_ram_mb(total))
 }
+
+/// Whether Windows' Redirection Guard is on for this process. A launcher started from a program
+/// that turned it on (the installer's «Launch» box) inherits it, and so do the games it starts;
+/// Horizon then can't open the folder links of its resource pack cache (os error 448) and
+/// stops while loading. Only read here: the launcher asks the player to start it again.
+#[cfg(windows)]
+pub fn redirection_guard() -> bool {
+    #[link(name = "kernel32")]
+    extern "system" {
+        fn GetCurrentProcess() -> isize;
+        fn GetProcessMitigationPolicy(process: isize, policy: i32, buffer: *mut u32, length: usize) -> i32;
+    }
+    const PROCESS_REDIRECTION_TRUST_POLICY: i32 = 16;
+    let mut flags = 0u32;
+    // SAFETY: the current process's pseudo handle and a 4-byte buffer, as the call expects.
+    let ok = unsafe { GetProcessMitigationPolicy(GetCurrentProcess(), PROCESS_REDIRECTION_TRUST_POLICY, &mut flags, 4) };
+    ok != 0 && flags & 1 != 0
+}
+
+#[cfg(not(windows))]
+pub fn redirection_guard() -> bool {
+    false
+}

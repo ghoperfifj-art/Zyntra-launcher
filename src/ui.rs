@@ -39,6 +39,9 @@ pub fn setup(ctx: &egui::Context) {
     fonts.families.insert(FontFamily::Name("bold".into()), bold);
     ctx.set_fonts(fonts);
 
+    // Always dark: with a light Windows theme egui would otherwise use its light style
+    // (white scroll bars, other spacing).
+    ctx.set_theme(egui::Theme::Dark);
     ctx.style_mut(|s| {
         let v = &mut s.visuals;
         *v = egui::Visuals::dark();
@@ -173,7 +176,9 @@ pub fn card_glow(p: &Painter, rect: Rect, rounding: f32, center: Pos2, radius: f
     };
     // Rays from a point inside the card to its outline; a centre outside the card still
     // sets the colours.
-    let origin = center.clamp(rect.min + Vec2::splat(1.0), rect.max - Vec2::splat(1.0));
+    // A corner's radius inside: rays from the very corner would fill the corner square.
+    let inset = Vec2::splat(rounding.max(1.0).min(rect.width().min(rect.height()) / 2.0));
+    let origin = center.clamp(rect.min + inset, rect.max - inset);
     let outline = rounded_outline(rect, rounding);
     let samples = 16u32;
     let mut mesh = Mesh::default();
