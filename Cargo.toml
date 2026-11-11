@@ -1,6 +1,6 @@
 [package]
 name = "zyntra"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 description = "Zyntra Launcher — лёгкий лаунчер Minecraft без рекламы, с поддержкой Horizon"
 license = "MIT"
